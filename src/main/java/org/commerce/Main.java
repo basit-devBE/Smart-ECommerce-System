@@ -1,7 +1,7 @@
 package org.commerce;
 
 import org.commerce.config.DBConfig;
-import org.commerce.entities.*;
+import org.commerce.models.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,13 +14,13 @@ public class Main {
         try (Connection connection = dbConfig.connectDB()) {
             System.out.println("Test Database connection established successfully.");
 
-            Users.initializeTable(connection);
-            Categories.initializeTable(connection);
-            Products.initializeTable(connection);
-            Inventory.initializeTable(connection);
-            Orders.initializeTable(connection);
-            OrderItems.initializeTable(connection);
-            Reviews.initializeTable(connection);
+            UsersModel.initializeTable(connection);
+            CategoriesModel.initializeTable(connection);
+            ProductsModel.initializeTable(connection);
+            InventoryModel.initializeTable(connection);
+            OrdersModel.initializeTable(connection);
+            OrderItemsModel.initializeTable(connection);
+            ReviewsModel.initializeTable(connection);
 
             System.out.println("Application setup completed successfully.");
         } catch (SQLException e) {
