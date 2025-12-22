@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class Main {
     
-    public static void main(String[] args) {
+     static void main(String[] args) {
         System.out.println("Welcome to the Smart E Commerce Application!");
         DBConfig dbConfig = new DBConfig();
         try (Connection connection = dbConfig.connectDB()) {
