@@ -1,4 +1,108 @@
 package org.commerce.repositories;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.commerce.entities.User;
+import org.commerce.enums.UserRole;
+
 public class UserRepository {
+
+    public  void createUser(User user,Connection connection){
+        //Implementation for creating a user in the database
+        String SQL = "INSERT INTO users (firstname,lastname,phone,userRole, email, password) VALUES (?, ?, ?,?, ?, ?)";
+        try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
+            pstmt.setString(1, user.getFirstname());
+            pstmt.setString(2, user.getLastname());
+            pstmt.setString(3, user.getPhone());
+            pstmt.setString(4, user.getUserRole().toString());
+            pstmt.setString(2, user.getEmail());
+            pstmt.setString(3, user.getPassword());
+            pstmt.executeUpdate();
+            System.out.println("User created successfully.");
+
+        }catch(SQLException e){
+            System.err.println("Failed to create user: " + e.getMessage());
+        }
+    }
+
+    public void deleteUser(int userId, Connection connection){
+        //Implementation for deleting a user from the database
+        String SQL = "DELETE FROM users WHERE id = ?";
+        try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
+            pstmt.setInt(1, userId);
+            pstmt.executeUpdate();
+            System.out.println("User deleted successfully.");
+        }catch(SQLException e){
+            System.err.println("Failed to delete user: " + e.getMessage());
+        }
+    }
+
+    public void updateUser(User user, Connection connection){
+        String SQL = "UPDATE users SET firstname = ?, lastname = ?, phone = ?, userRole = ?, email = ?, password = ? WHERE id = ?";
+        try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
+            pstmt.setString(1, user.getFirstname());
+            pstmt.setString(2, user.getLastname());
+            pstmt.setString(3, user.getPhone());
+            pstmt.setString(4, user.getUserRole().toString());
+            pstmt.setString(5, user.getEmail());
+            pstmt.setString(6, user.getPassword());
+            pstmt.setInt(7, user.getId());
+            pstmt.executeUpdate();
+            System.out.println("User updated successfully.");
+        }catch(SQLException e){
+            System.err.println("Failed to update user: " + e.getMessage());
+        }
+    }
+
+    public User getUserById(int userId, Connection connection){
+        String SQL = "SELECT * FROM users WHERE id = ?";
+        try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery(SQL);
+            if(rs.next()){
+                User user = new User();
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+                user.setPhone(rs.getString("phone"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+
+                return user;
+            }
+            System.out.println("User retrieved successfully.");
+        }catch(SQLException e){
+            System.err.println("Failed to retrieve user: " + e.getMessage());
+        }
+        return null;
+        
+    }
+
+    public List<User> getAllUsers(Connection connection){
+        String SQL = "SELECT firstname,lastname,phone,userRole,email FROM users";
+        List<User> users = new ArrayList<>();
+        try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+                user.setPhone(rs.getString("phone"));
+                user.setEmail(rs.getString("email"));
+                user.setUserRole(Enum.valueOf(UserRole.class, rs.getString("userRole")));
+                users.add(user);
+            }
+        }catch(SQLException e){
+            System.err.println("Failed to retrieve users: " + e.getMessage());
+        }
+        return users;
+    }
+
+
+
 }
