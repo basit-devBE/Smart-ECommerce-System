@@ -8,19 +8,17 @@ public class Products {
     private String productName;
     private String description;
     private BigDecimal price;
-    private int stock;
     private int categoryId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Products() {}
 
-    public Products(int id, String productName, String description, BigDecimal price, int stock, int categoryId, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Products(int id, String productName, String description, BigDecimal price, int categoryId, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.productName = productName;
         this.description = description;
         this.price = price;
-        this.stock = stock;
         this.categoryId = categoryId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -37,9 +35,6 @@ public class Products {
 
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
-
-    public int getStock() { return stock; }
-    public void setStock(int stock) { this.stock = stock; }
 
     public int getCategoryId() { return categoryId; }
     public void setCategoryId(int categoryId) { this.categoryId = categoryId; }

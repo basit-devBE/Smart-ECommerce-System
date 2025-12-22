@@ -13,7 +13,8 @@ public class InventoryModel {
                 warehouse_location VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (product_id) REFERENCES products(id)
+                FOREIGN KEY (product_id) REFERENCES products(id),
+                UNIQUE(product_id, warehouse_location)
                 )
                 """;
 

@@ -12,38 +12,46 @@ import org.commerce.enums.UserRole;
 
 public class UserRepository {
 
-    public  void createUser(User user,Connection connection){
-        //Implementation for creating a user in the database
-        String SQL = "INSERT INTO users (firstname,lastname,phone,userRole, email, password) VALUES (?, ?, ?,?, ?, ?)";
+    public User createUser(User user,Connection connection){
+        String SQL = "INSERT INTO users (firstname,lastname,phone,userRole, email, password) VALUES (?, ?, ?, ?, ?, ?) RETURNING *";
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             pstmt.setString(1, user.getFirstname());
             pstmt.setString(2, user.getLastname());
             pstmt.setString(3, user.getPhone());
             pstmt.setString(4, user.getUserRole().toString());
-            pstmt.setString(2, user.getEmail());
-            pstmt.setString(3, user.getPassword());
-            pstmt.executeUpdate();
-            System.out.println("User created successfully.");
-
+            pstmt.setString(5, user.getEmail());
+            pstmt.setString(6, user.getPassword());
+            
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                user.setId(rs.getInt("id"));
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                System.out.println("User created successfully.");
+                return user;
+            }
         }catch(SQLException e){
             System.err.println("Failed to create user: " + e.getMessage());
         }
+        return null;
     }
 
-    public void deleteUser(int userId, Connection connection){
-        //Implementation for deleting a user from the database
+    public boolean deleteUser(int userId, Connection connection){
         String SQL = "DELETE FROM users WHERE id = ?";
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             pstmt.setInt(1, userId);
-            pstmt.executeUpdate();
-            System.out.println("User deleted successfully.");
+            int rowsAffected = pstmt.executeUpdate();
+            if(rowsAffected > 0){
+                System.out.println("User deleted successfully.");
+                return true;
+            }
         }catch(SQLException e){
             System.err.println("Failed to delete user: " + e.getMessage());
         }
+        return false;
     }
 
-    public void updateUser(User user, Connection connection){
-        String SQL = "UPDATE users SET firstname = ?, lastname = ?, phone = ?, userRole = ?, email = ?, password = ? WHERE id = ?";
+    public User updateUser(User user, Connection connection){
+        String SQL = "UPDATE users SET firstname = ?, lastname = ?, phone = ?, userRole = ?, email = ?, password = ? WHERE id = ? RETURNING *";
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             pstmt.setString(1, user.getFirstname());
             pstmt.setString(2, user.getLastname());
@@ -52,11 +60,17 @@ public class UserRepository {
             pstmt.setString(5, user.getEmail());
             pstmt.setString(6, user.getPassword());
             pstmt.setInt(7, user.getId());
-            pstmt.executeUpdate();
-            System.out.println("User updated successfully.");
+            
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                System.out.println("User updated successfully.");
+                return user;
+            }
         }catch(SQLException e){
             System.err.println("Failed to update user: " + e.getMessage());
         }
+        return null;
     }
 
     public User getUserById(int userId, Connection connection){
