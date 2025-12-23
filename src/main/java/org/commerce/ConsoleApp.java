@@ -8,6 +8,7 @@ import org.commerce.services.UserService;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleApp {
@@ -35,7 +36,9 @@ public class ConsoleApp {
                 System.out.println("1. Create User");
                 System.out.println("2. Delete User");
                 System.out.println("3. Edit User");
-                System.out.println("4. Exit");
+                System.out.println("4. View User by ID");
+                System.out.println("5. View All Users");
+                System.out.println("6. Exit");
                 System.out.print("Choose option: ");
                 
                 int choice = scanner.nextInt();
@@ -45,7 +48,9 @@ public class ConsoleApp {
                     case 1 -> createUserForm();
                     case 2 -> deleteUserForm();
                     case 3 -> editUserForm();
-                    case 4 -> running = false;
+                    case 4 -> viewUserForm();
+                    case 5 -> viewAllUsersForm();
+                    case 6 -> running = false;
                     default -> System.out.println("Invalid option");
                 }
             }
@@ -172,6 +177,49 @@ public class ConsoleApp {
             System.out.println("Email: " + updated.getEmail());
         }else{
             System.out.println("\n✗ Failed to update user");
+        }
+    }
+    
+    private static void viewUserForm(){
+        System.out.println("\n--- View User ---");
+        
+        System.out.print("Enter User ID: ");
+        int userId = scanner.nextInt();
+        scanner.nextLine();
+        
+        User user = userService.getUserById(userId);
+        
+        if(user != null){
+            System.out.println("\n=== User Details ===");
+            System.out.println("ID: " + user.getId());
+            System.out.println("Name: " + user.getFirstname() + " " + user.getLastname());
+            System.out.println("Email: " + user.getEmail());
+            System.out.println("Phone: " + user.getPhone());
+            System.out.println("Role: " + user.getUserRole());
+            System.out.println("Created: " + user.getCreatedAt());
+        }else{
+            System.out.println("\n✗ User not found");
+        }
+    }
+    
+    private static void viewAllUsersForm(){
+        System.out.println("\n--- All Users ---");
+        
+        List<User> users = userService.getAllUsers();
+        
+        if(users.isEmpty()){
+            System.out.println("No users found");
+        }else{
+            System.out.println("\nTotal users: " + users.size());
+            System.out.println("\n" + "=".repeat(80));
+            for(User user : users){
+                System.out.printf("ID: %-5d | Name: %-20s | Email: %-25s | Role: %-10s%n",
+                    user.getId(),
+                    user.getFirstname() + " " + user.getLastname(),
+                    user.getEmail(),
+                    user.getUserRole());
+            }
+            System.out.println("=".repeat(80));
         }
     }
 }

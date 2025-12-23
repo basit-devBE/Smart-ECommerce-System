@@ -1,6 +1,8 @@
 package org.commerce.services;
 
 import java.sql.Connection;
+import java.util.List;
+
 import org.commerce.entities.User;
 import org.commerce.repositories.UserRepository;
 
@@ -75,5 +77,18 @@ public class UserService {
         }
 
         return userRepository.updateUser(userExists, connection);
+    }
+
+    public User getUserById(int userId){
+        if(userId <= 0){
+            System.err.println("Invalid user ID");
+            return null;
+        }
+
+        return userRepository.getUserById(userId, connection);
+    }
+
+    public List<User> getAllUsers(){
+        return userRepository.getAllUsers(connection);
     }
 }
