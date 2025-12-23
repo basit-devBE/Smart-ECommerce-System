@@ -117,4 +117,27 @@ public class UserRepository {
         }
         return users;
     }
+
+    public User getUserByEmail(String email, Connection connection){
+        String SQL = "SELECT * FROM users WHERE email = ?";
+        try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+                user.setPhone(rs.getString("phone"));
+                user.setUserRole(UserRole.valueOf(rs.getString("userRole")));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                return user;
+            }
+        }catch(SQLException e){
+            System.err.println("Failed to retrieve user: " + e.getMessage());
+        }
+        return null;
+    }
 }

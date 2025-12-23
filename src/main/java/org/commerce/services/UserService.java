@@ -91,4 +91,30 @@ public class UserService {
     public List<User> getAllUsers(){
         return userRepository.getAllUsers(connection);
     }
+
+    public User login(String email, String password){
+        if(email == null || email.isEmpty()){
+            System.err.println("Email is required");
+            return null;
+        }
+        
+        if(password == null || password.isEmpty()){
+            System.err.println("Password is required");
+            return null;
+        }
+        
+        User user = userRepository.getUserByEmail(email, connection);
+        
+        if(user == null){
+            System.err.println("Invalid email or password");
+            return null;
+        }
+        
+        if(!user.getPassword().equals(password)){
+            System.err.println("Invalid email or password");
+            return null;
+        }
+        
+        return user;
+    }
 }

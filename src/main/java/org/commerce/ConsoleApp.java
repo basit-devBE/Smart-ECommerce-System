@@ -14,6 +14,7 @@ import java.util.Scanner;
 public class ConsoleApp {
     private static Scanner scanner = new Scanner(System.in);
     private static UserService userService;
+    private static User currentUser = null;
 
     public static void main(String[] args) {
         DBConfig dbConfig = new DBConfig();
@@ -29,16 +30,22 @@ public class ConsoleApp {
             OrderItemsModel.initializeTable(connection);
             ReviewsModel.initializeTable(connection);
 
+            // Login first
+            if(!loginForm()){
+                System.out.println("Login failed. Exiting...");
+                return;
+            }
             
             boolean running = true;
             while(running){
                 System.out.println("\n=== User Management ===");
+                System.out.println("Logged in as: " + currentUser.getFirstname() + " (" + currentUser.getUserRole() + ")");
                 System.out.println("1. Create User");
                 System.out.println("2. Delete User");
                 System.out.println("3. Edit User");
                 System.out.println("4. View User by ID");
                 System.out.println("5. View All Users");
-                System.out.println("6. Exit");
+                System.out.println("6. Logout");
                 System.out.print("Choose option: ");
                 
                 int choice = scanner.nextInt();
@@ -50,7 +57,11 @@ public class ConsoleApp {
                     case 3 -> editUserForm();
                     case 4 -> viewUserForm();
                     case 5 -> viewAllUsersForm();
-                    case 6 -> running = false;
+                    case 6 -> {
+                        currentUser = null;
+                        running = false;
+                        System.out.println("Logged out successfully!");
+                    }
                     default -> System.out.println("Invalid option");
                 }
             }
@@ -221,5 +232,35 @@ public class ConsoleApp {
             }
             System.out.println("=".repeat(80));
         }
+    }
+    
+    private static boolean loginForm(){
+        System.out.println("\n=== Login ===");
+        
+        int attempts = 0;
+        while(attempts < 3){
+            System.out.print("Email: ");
+            String email = scanner.nextLine();
+            
+            System.out.print("Password: ");
+            String password = scanner.nextLine();
+            
+            User user = userService.login(email, password);
+            
+            if(user != null){
+                currentUser = user;
+                System.out.println("\n✓ Login successful!");
+                System.out.println("Welcome, " + user.getFirstname() + " " + user.getLastname());
+                return true;
+            }
+            
+            attempts++;
+            if(attempts < 3){
+                System.out.println("\n✗ Login failed. " + (3 - attempts) + " attempts remaining.\n");
+            }
+        }
+        
+        System.out.println("\n✗ Maximum login attempts exceeded.");
+        return false;
     }
 }
