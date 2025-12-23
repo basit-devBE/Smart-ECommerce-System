@@ -89,6 +89,19 @@ public class UserRepository {
                 return user;
             }
             System.out.println("User retrieved successfully.");
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                User user = new User();
+                user.setId(rs.getInt("id"));
+                user.setFirstname(rs.getString("firstname"));
+                user.setLastname(rs.getString("lastname"));
+                user.setPhone(rs.getString("phone"));
+                user.setUserRole(UserRole.valueOf(rs.getString("userRole")));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+                return user;
+            }
         }catch(SQLException e){
             System.err.println("Failed to retrieve user: " + e.getMessage());
         }
@@ -98,6 +111,10 @@ public class UserRepository {
 
     public List<User> getAllUsers(Connection connection){
         String SQL = "SELECT firstname,lastname,phone,userRole,email FROM users";
+    }
+
+    public List<User> getAllUsers(Connection connection){
+        String SQL = "SELECT * FROM users";
         List<User> users = new ArrayList<>();
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             ResultSet rs = pstmt.executeQuery();
@@ -109,6 +126,8 @@ public class UserRepository {
                 user.setPhone(rs.getString("phone"));
                 user.setEmail(rs.getString("email"));
                 user.setUserRole(Enum.valueOf(UserRole.class, rs.getString("userRole")));
+                user.setUserRole(UserRole.valueOf(rs.getString("userRole")));
+                user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
                 users.add(user);
             }
         }catch(SQLException e){
