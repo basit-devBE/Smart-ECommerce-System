@@ -7,11 +7,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.commerce.entities.Products;
+import org.commerce.entities.Product;
 
 public class ProductRepository {
     
-    public Products createProduct(Products product, Connection connection){
+    public Product createProduct(Product product, Connection connection){
         String SQL = "INSERT INTO products (product_name, description, price, category_id) VALUES (?, ?, ?, ?) RETURNING *";
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             pstmt.setString(1, product.getProductName());
@@ -33,13 +33,13 @@ public class ProductRepository {
         return null;
     }
     
-    public Products getProductById(int productId, Connection connection){
+    public Product getProductById(int productId, Connection connection){
         String SQL = "SELECT * FROM products WHERE id = ?";
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             pstmt.setInt(1, productId);
             ResultSet rs = pstmt.executeQuery();
             if(rs.next()){
-                Products product = new Products();
+                Product product = new Product();
                 product.setId(rs.getInt("id"));
                 product.setProductName(rs.getString("product_name"));
                 product.setDescription(rs.getString("description"));
@@ -55,7 +55,7 @@ public class ProductRepository {
         return null;
     }
     
-    public Products updateProduct(Products product, Connection connection){
+    public Product updateProduct(Product product, Connection connection){
         String SQL = "UPDATE products SET product_name = ?, description = ?, price = ?, category_id = ? WHERE id = ? RETURNING *";
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             pstmt.setString(1, product.getProductName());
@@ -106,13 +106,13 @@ public class ProductRepository {
         return 0;
     }
     
-    public List<Products> getAllProducts(Connection connection){
+    public List<Product> getAllProducts(Connection connection){
         String SQL = "SELECT * FROM products";
-        List<Products> products = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         try(PreparedStatement pstmt = connection.prepareStatement(SQL)){
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()){
-                Products product = new Products();
+                Product product = new Product();
                 product.setId(rs.getInt("id"));
                 product.setProductName(rs.getString("product_name"));
                 product.setDescription(rs.getString("description"));

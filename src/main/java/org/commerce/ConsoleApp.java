@@ -2,10 +2,13 @@ package org.commerce;
 
 import org.commerce.config.DBConfig;
 import org.commerce.entities.User;
+import org.commerce.entities.Product;
 import org.commerce.enums.UserRole;
 import org.commerce.models.*;
 import org.commerce.services.UserService;
+import org.commerce.services.ProductService;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.Scanner;
 public class ConsoleApp {
     private static Scanner scanner = new Scanner(System.in);
     private static UserService userService;
+    private static ProductService productService;
     private static User currentUser = null;
 
     public static void main(String[] args) {
@@ -22,6 +26,7 @@ public class ConsoleApp {
             System.out.println("Database connected successfully.\n");
             
             userService = new UserService(connection);
+            productService = new ProductService(connection);
             UsersModel.initializeTable(connection);
             CategoriesModel.initializeTable(connection);
             ProductsModel.initializeTable(connection);
@@ -45,7 +50,8 @@ public class ConsoleApp {
                 System.out.println("3. Edit User");
                 System.out.println("4. View User by ID");
                 System.out.println("5. View All Users");
-                System.out.println("6. Logout");
+                System.out.println("6. Create Product");
+                System.out.println("7. Logout");
                 System.out.print("Choose option: ");
                 
                 int choice = scanner.nextInt();
@@ -57,7 +63,8 @@ public class ConsoleApp {
                     case 3 -> editUserForm();
                     case 4 -> viewUserForm();
                     case 5 -> viewAllUsersForm();
-                    case 6 -> {
+                    case 6 -> createProductForm();
+                    case 7 -> {
                         currentUser = null;
                         running = false;
                         System.out.println("Logged out successfully!");
@@ -262,5 +269,41 @@ public class ConsoleApp {
         
         System.out.println("\n✗ Maximum login attempts exceeded.");
         return false;
+    }
+    
+    private static void createProductForm(){
+        System.out.println("\n--- Create New Product ---");
+        
+        System.out.print("Product Name: ");
+        String productName = scanner.nextLine();
+        
+        System.out.print("Description: ");
+        String description = scanner.nextLine();
+        
+        System.out.print("Price: ");
+        BigDecimal price = scanner.nextBigDecimal();
+        scanner.nextLine();
+        
+        System.out.print("Category ID: ");
+        int categoryId = scanner.nextInt();
+        scanner.nextLine();
+        
+        Product product = new Product();
+        product.setProductName(productName);
+        product.setDescription(description);
+        product.setPrice(price);
+        product.setCategoryId(categoryId);
+        
+        Product created = productService.createProduct(product);
+        
+        if(created != null){
+            System.out.println("\n✓ Product created successfully!");
+            System.out.println("ID: " + created.getId());
+            System.out.println("Name: " + created.getProductName());
+            System.out.println("Price: $" + created.getPrice());
+            System.out.println("Category ID: " + created.getCategoryId());
+        }else{
+            System.out.println("\n✗ Failed to create product");
+        }
     }
 }

@@ -88,7 +88,7 @@ public class UserService {
         return userRepository.getUserById(userId, connection);
     }
 
-    public List<User> getAllUsers(){
+    public List <User> getAllUsers(){
         return userRepository.getAllUsers(connection);
     }
 
