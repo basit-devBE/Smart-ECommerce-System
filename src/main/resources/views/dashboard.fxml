@@ -92,6 +92,34 @@
                 </VBox>
             </Tab>
             
+            <!-- Inventory Tab -->
+            <Tab text="Inventory">
+                <VBox spacing="15" styleClass="tab-content">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Text text="Inventory Management" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Add Inventory" onAction="#handleAddInventory" styleClass="primary-button"/>
+                        <Button text="Adjust" onAction="#handleAdjustInventory" styleClass="secondary-button"/>
+                    </HBox>
+                    
+                    <TableView fx:id="inventoryTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="inventoryIdCol" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="inventoryProductCol" text="Product" prefWidth="250"/>
+                            <TableColumn fx:id="inventoryQuantityCol" text="Quantity" prefWidth="120"/>
+                            <TableColumn fx:id="inventoryWarehouseCol" text="Warehouse" prefWidth="200"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </Tab>
+            
             <!-- Users Tab -->
             <Tab text="Users">
                 <VBox spacing="15" styleClass="tab-content">
