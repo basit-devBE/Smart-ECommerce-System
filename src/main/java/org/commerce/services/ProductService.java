@@ -1,88 +1,169 @@
 package org.commerce.services;
 
+import org.commerce.common.Result;
+import org.commerce.common.ValidationResult;
 import org.commerce.entities.Product;
+import org.commerce.exceptions.EntityNotFoundException;
+import org.commerce.exceptions.ServiceException;
+import org.commerce.repositories.CategoryRepository;
 import org.commerce.repositories.ProductRepository;
+import org.commerce.repositories.interfaces.ICategoryRepository;
+import org.commerce.repositories.interfaces.IProductRepository;
+import org.commerce.validators.ProductValidator;
 
 import java.sql.Connection;
-import java.math.BigDecimal;
+import java.util.List;
 
+/**
+ * Service layer for Product business logic.
+ * Handles validation, business rules, and delegates to repository.
+ */
 public class ProductService {
     private final Connection connection;
-    private final ProductRepository productRepository;
+    private final IProductRepository productRepository;
+    private final ICategoryRepository categoryRepository;
 
-    public ProductService(Connection connection ) {
+    public ProductService(Connection connection) {
         this.connection = connection;
         this.productRepository = new ProductRepository();
+        this.categoryRepository = new CategoryRepository();
     }
 
-    public Product createProduct(Product product){
-        if(product == null){
-            System.err.println("Product cannot be null");
-            return null;
+    /**
+     * Creates a new product.
+     * 
+     * @param product The product to create
+     * @return Result containing the created product or error message
+     */
+    public Result<Product> createProduct(Product product) {
+        // Field validation
+        ValidationResult validation = ProductValidator.validate(product);
+        if (!validation.isValid()) {
+            return Result.failure(validation.getErrorMessage());
         }
 
-        if(product.getProductName() == null || product.getProductName().isEmpty()){
-            System.err.println("Product name is required");
-            return null;
+        // Business rule: Category must exist
+        if (!categoryRepository.exists(product.getCategoryId(), connection)) {
+            throw new ServiceException("Category with ID " + product.getCategoryId() + " does not exist");
         }
 
-        if(product.getPrice() == null || product.getPrice().compareTo(BigDecimal.ZERO) <= 0){
-            System.err.println("Price must be greater than zero");
-            return null;
-        }
-
-        if(product.getCategoryId() <= 0){
-            System.err.println("Category ID is required");
-            return null;
-        }
-
-        return productRepository.createProduct(product, connection);
+        // Create product
+        Product created = productRepository.createProduct(product, connection);
+        return Result.success(created, "Product created successfully");
     }
 
-    public boolean deleteProduct(int productId){
-        if(productId <= 0){
-            System.err.println("Invalid product ID");
-            return false;
+    /**
+     * Deletes a product by ID.
+     * 
+     * @param productId The product ID
+     * @return Result containing success status or error message
+     */
+    public Result<Boolean> deleteProduct(int productId) {
+        if (productId <= 0) {
+            return Result.failure("Invalid product ID");
         }
 
+        // Business rule: Product must exist
         Product productExists = productRepository.getProductById(productId, connection);
-        if(productExists == null){
-            System.err.println("Product does not exist");
-            return false;
+        if (productExists == null) {
+            throw new EntityNotFoundException("Product", productId);
         }
 
-        return productRepository.deleteProduct(productId, connection);
+        boolean deleted = productRepository.deleteProduct(productId, connection);
+        return Result.success(deleted, "Product deleted successfully");
     }
 
-    public Product editProduct(Product product){
-        if(product.getId() <= 0){
-            System.err.println("Invalid product ID");
-            return null;
+    /**
+     * Updates an existing product.
+     * 
+     * @param product The product with updated information
+     * @return Result containing the updated product or error message
+     */
+    public Result<Product> updateProduct(Product product) {
+        // Field validation
+        ValidationResult validation = ProductValidator.validateForUpdate(product);
+        if (!validation.isValid()) {
+            return Result.failure(validation.getErrorMessage());
         }
 
-        Product productExists = productRepository.getProductById(product.getId(), connection);
-        if(productExists == null){
-            System.err.println("Product does not exist");
-            return null;
+        // Business rule: Product must exist
+        Product existingProduct = productRepository.getProductById(product.getId(), connection);
+        if (existingProduct == null) {
+            throw new EntityNotFoundException("Product", product.getId());
         }
 
         // Merge: use new values if provided, otherwise keep existing
-        if(product.getProductName() != null && !product.getProductName().isEmpty()){
-            productExists.setProductName(product.getProductName());
+        if (product.getProductName() != null && !product.getProductName().isEmpty()) {
+            existingProduct.setProductName(product.getProductName());
         }
 
-        if(product.getDescription() != null){
-            productExists.setDescription(product.getDescription());
+        if (product.getDescription() != null) {
+            existingProduct.setDescription(product.getDescription());
         }
 
-        if(product.getPrice() != null && product.getPrice().compareTo(BigDecimal.ZERO) > 0){
-            productExists.setPrice(product.getPrice());
+        if (product.getPrice() != null) {
+            existingProduct.setPrice(product.getPrice());
         }
 
-        if(product.getCategoryId() > 0){
-            productExists.setCategoryId(product.getCategoryId());
+        if (product.getCategoryId() > 0) {
+            // Business rule: New category must exist
+            if (!categoryRepository.exists(product.getCategoryId(), connection)) {
+                throw new ServiceException("Category with ID " + product.getCategoryId() + " does not exist");
+            }
+            existingProduct.setCategoryId(product.getCategoryId());
         }
 
-        return productRepository.updateProduct(productExists, connection);
+        Product updated = productRepository.updateProduct(existingProduct, connection);
+        return Result.success(updated, "Product updated successfully");
+    }
+
+    /**
+     * Retrieves a product by ID.
+     * 
+     * @param productId The product ID
+     * @return Result containing the product or error message
+     */
+    public Result<Product> getProductById(int productId) {
+        if (productId <= 0) {
+            return Result.failure("Invalid product ID");
+        }
+
+        Product product = productRepository.getProductById(productId, connection);
+        if (product == null) {
+            throw new EntityNotFoundException("Product", productId);
+        }
+
+        return Result.success(product);
+    }
+
+    /**
+     * Retrieves all products.
+     * 
+     * @return Result containing list of all products
+     */
+    public Result<List<Product>> getAllProducts() {
+        List<Product> products = productRepository.getAllProducts(connection);
+        return Result.success(products);
+    }
+
+    /**
+     * Gets the total stock for a product.
+     * 
+     * @param productId The product ID
+     * @return Result containing the total stock quantity
+     */
+    public Result<Integer> getTotalStock(int productId) {
+        if (productId <= 0) {
+            return Result.failure("Invalid product ID");
+        }
+
+        // Business rule: Product must exist
+        Product product = productRepository.getProductById(productId, connection);
+        if (product == null) {
+            throw new EntityNotFoundException("Product", productId);
+        }
+
+        int totalStock = productRepository.getTotalStock(productId, connection);
+        return Result.success(totalStock);
     }
 }
