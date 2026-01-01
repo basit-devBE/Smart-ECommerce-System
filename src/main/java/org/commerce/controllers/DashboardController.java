@@ -44,6 +44,13 @@ public class DashboardController {
     @FXML private TableColumn<Categories, String> categoryNameCol;
     @FXML private TableColumn<Categories, String> categoryDescCol;
     
+    // Inventory Tab
+    @FXML private TableView<InventoryDisplay> inventoryTable;
+    @FXML private TableColumn<InventoryDisplay, Integer> inventoryIdCol;
+    @FXML private TableColumn<InventoryDisplay, String> inventoryProductCol;
+    @FXML private TableColumn<InventoryDisplay, Integer> inventoryQuantityCol;
+    @FXML private TableColumn<InventoryDisplay, String> inventoryWarehouseCol;
+    
     // Users Tab
     @FXML private TableView<User> usersTable;
     @FXML private TableColumn<User, Integer> userIdCol;
@@ -53,6 +60,7 @@ public class DashboardController {
 
     private ObservableList<ProductDisplay> productsList = FXCollections.observableArrayList();
     private ObservableList<Categories> categoriesList = FXCollections.observableArrayList();
+    private ObservableList<InventoryDisplay> inventoryList = FXCollections.observableArrayList();
     private ObservableList<User> usersList = FXCollections.observableArrayList();
 
     @FXML
@@ -65,6 +73,7 @@ public class DashboardController {
 
         setupProductsTable();
         setupCategoriesTable();
+        setupInventoryTable();
         setupUsersTable();
         
         loadAllData();
@@ -88,6 +97,15 @@ public class DashboardController {
         categoriesTable.setItems(categoriesList);
     }
 
+    private void setupInventoryTable() {
+        inventoryIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        inventoryProductCol.setCellValueFactory(new PropertyValueFactory<>("productName"));
+        inventoryQuantityCol.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        inventoryWarehouseCol.setCellValueFactory(new PropertyValueFactory<>("warehouseLocation"));
+        
+        inventoryTable.setItems(inventoryList);
+    }
+
     private void setupUsersTable() {
         userIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         userNameCol.setCellValueFactory(cellData -> 
@@ -108,6 +126,7 @@ public class DashboardController {
     private void loadAllData() {
         loadProducts();
         loadCategories();
+        loadInventory();
         loadUsers();
     }
 
@@ -141,6 +160,30 @@ public class DashboardController {
         
         if (result.isSuccess()) {
             categoriesList.addAll(result.getData());
+        }
+    }
+
+    private void loadInventory() {
+        inventoryList.clear();
+        
+        Result<List<Product>> productsResult = ECommerceApp.getProductService().getAllProducts();
+        if (!productsResult.isSuccess()) return;
+        
+        for (Product product : productsResult.getData()) {
+            Result<List<Inventory>> inventoryResult = 
+                ECommerceApp.getInventoryService().getInventoryByProductId(product.getId());
+            
+            if (inventoryResult.isSuccess()) {
+                for (Inventory inv : inventoryResult.getData()) {
+                    inventoryList.add(new InventoryDisplay(
+                        inv.getId(),
+                        inv.getProductId(),
+                        product.getProductName(),
+                        inv.getQuantity(),
+                        inv.getWarehouseLocation()
+                    ));
+                }
+            }
         }
     }
 
@@ -219,6 +262,22 @@ public class DashboardController {
             }
         } else {
             showAlert("No Selection", "Please select a category to delete.");
+        }
+    }
+
+    // Inventory Actions
+    @FXML
+    private void handleAddInventory() {
+        showInventoryDialog();
+    }
+
+    @FXML
+    private void handleAdjustInventory() {
+        InventoryDisplay selected = inventoryTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            showAdjustInventoryDialog(selected);
+        } else {
+            showAlert("No Selection", "Please select an inventory record to adjust.");
         }
     }
 
@@ -349,6 +408,132 @@ public class DashboardController {
         });
     }
 
+    private void showInventoryDialog() {
+        Dialog<Inventory> dialog = new Dialog<>();
+        dialog.setTitle("Add Inventory");
+        dialog.setHeaderText("Create a new inventory record");
+
+        ButtonType saveButton = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
+
+        VBox content = new VBox(10);
+        
+        ComboBox<Product> productCombo = new ComboBox<>();
+        Result<List<Product>> productsResult = ECommerceApp.getProductService().getAllProducts();
+        if (productsResult.isSuccess()) {
+            productCombo.getItems().addAll(productsResult.getData());
+        }
+        productCombo.setConverter(new javafx.util.StringConverter<Product>() {
+            @Override
+            public String toString(Product p) {
+                return p != null ? p.getProductName() : "";
+            }
+            @Override
+            public Product fromString(String string) {
+                return null;
+            }
+        });
+        productCombo.setPromptText("Select Product");
+        
+        TextField quantityField = new TextField();
+        quantityField.setPromptText("Quantity");
+        
+        TextField warehouseField = new TextField();
+        warehouseField.setPromptText("Warehouse Location");
+
+        content.getChildren().addAll(
+            new Label("Product:"), productCombo,
+            new Label("Quantity:"), quantityField,
+            new Label("Warehouse Location:"), warehouseField
+        );
+
+        dialog.getDialogPane().setContent(content);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButton) {
+                Inventory inv = new Inventory();
+                if (productCombo.getValue() != null) {
+                    inv.setProductId(productCombo.getValue().getId());
+                }
+                try {
+                    inv.setQuantity(Integer.parseInt(quantityField.getText()));
+                } catch (NumberFormatException e) {
+                    inv.setQuantity(0);
+                }
+                inv.setWarehouseLocation(warehouseField.getText());
+                return inv;
+            }
+            return null;
+        });
+
+        Optional<Inventory> result = dialog.showAndWait();
+        result.ifPresent(inv -> {
+            Result<Inventory> saveResult = ECommerceApp.getInventoryService().createInventory(inv);
+            
+            if (saveResult.isSuccess()) {
+                showAlert("Success", "Inventory created successfully!");
+                loadInventory();
+                loadProducts();
+            } else {
+                showAlert("Error", saveResult.getMessage());
+            }
+        });
+    }
+
+    private void showAdjustInventoryDialog(InventoryDisplay inventory) {
+        Dialog<Integer> dialog = new Dialog<>();
+        dialog.setTitle("Adjust Inventory");
+        dialog.setHeaderText("Adjust inventory for: " + inventory.getProductName() + 
+                            "\nCurrent Quantity: " + inventory.getQuantity());
+
+        ButtonType saveButton = new ButtonType("Adjust", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButton, ButtonType.CANCEL);
+
+        VBox content = new VBox(10);
+        
+        TextField adjustmentField = new TextField();
+        adjustmentField.setPromptText("Adjustment (e.g., +10 or -5)");
+        
+        Label helpLabel = new Label("Enter a positive number to add, or negative to subtract");
+        helpLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: gray;");
+
+        content.getChildren().addAll(
+            new Label("Adjustment Amount:"), adjustmentField,
+            helpLabel
+        );
+
+        dialog.getDialogPane().setContent(content);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == saveButton) {
+                try {
+                    return Integer.parseInt(adjustmentField.getText());
+                } catch (NumberFormatException e) {
+                    return null;
+                }
+            }
+            return null;
+        });
+
+        Optional<Integer> result = dialog.showAndWait();
+        result.ifPresent(adjustment -> {
+            Result<Inventory> adjustResult = ECommerceApp.getInventoryService().adjustInventory(
+                inventory.getProductId(), 
+                inventory.getWarehouseLocation(), 
+                adjustment
+            );
+            
+            if (adjustResult.isSuccess()) {
+                showAlert("Success", "Inventory adjusted successfully!\nNew quantity: " + 
+                         adjustResult.getData().getQuantity());
+                loadInventory();
+                loadProducts();
+            } else {
+                showAlert("Error", adjustResult.getMessage());
+            }
+        });
+    }
+
     private void showUserDialog(User user) {
         Dialog<User> dialog = new Dialog<>();
         dialog.setTitle("Add User");
@@ -450,5 +635,28 @@ public class DashboardController {
         public String getPriceFormatted() { return "$" + price.toString(); }
         public int getTotalStock() { return totalStock; }
         public String getCategoryName() { return categoryName; }
+    }
+
+    // Inner class for inventory display
+    public static class InventoryDisplay {
+        private final int id;
+        private final int productId;
+        private final String productName;
+        private final int quantity;
+        private final String warehouseLocation;
+
+        public InventoryDisplay(int id, int productId, String productName, int quantity, String warehouseLocation) {
+            this.id = id;
+            this.productId = productId;
+            this.productName = productName;
+            this.quantity = quantity;
+            this.warehouseLocation = warehouseLocation;
+        }
+
+        public int getId() { return id; }
+        public int getProductId() { return productId; }
+        public String getProductName() { return productName; }
+        public int getQuantity() { return quantity; }
+        public String getWarehouseLocation() { return warehouseLocation; }
     }
 }
