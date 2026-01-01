@@ -35,6 +35,8 @@ public class ConsoleApp {
             OrderItemsModel.initializeTable(connection);
             ReviewsModel.initializeTable(connection);
 
+            seedUser();
+
             // Login first
             if(!loginForm()){
                 System.out.println("Login failed. Exiting...");
@@ -217,6 +219,30 @@ public class ConsoleApp {
             System.out.println("Created: " + user.getCreatedAt());
         }else{
             System.out.println("\n✗ User not found");
+        }
+    }
+
+    public static  void seedUser(){
+        User user = new User();
+        user.setFirstname("Admin");
+        user.setLastname("User");
+        user.setEmail("mohammedbasit362@gmail.com");
+        user.setPassword("bece2018");
+        user.setPhone("0257323294");
+
+        try{
+            user.setUserRole(UserRole.ADMIN);
+            User created = userService.createUser(user);
+            if (created != null){
+                System.out.println("Admin user created:");
+                System.out.println("Email: " + created.getEmail());
+                System.out.println("Password: " + user.getPassword());
+            }
+        }catch (Exception e){
+            System.err.println("Failed to seed admin user: " + e.getMessage());
+        }finally {
+            System.out.println("Admin user seeding process completed.");
+
         }
     }
     
