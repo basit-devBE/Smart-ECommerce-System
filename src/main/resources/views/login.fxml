@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.commerce.controllers.LoginController"
+            styleClass="root">
+    
+    <!-- Left Side - Branding -->
+    <left>
+        <VBox alignment="CENTER" styleClass="login-left" prefWidth="400">
+            <padding>
+                <Insets top="50" right="50" bottom="50" left="50"/>
+            </padding>
+            
+            <Text text="Smart E-Commerce" styleClass="brand-title"/>
+            <Text text="Your Digital Marketplace" styleClass="brand-subtitle"/>
+            
+            <VBox spacing="20" alignment="CENTER_LEFT" styleClass="features-box">
+                <padding>
+                    <Insets top="50"/>
+                </padding>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Manage Products Efficiently" styleClass="feature-text"/>
+                </HBox>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Track Inventory in Real-Time" styleClass="feature-text"/>
+                </HBox>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Comprehensive Order Management" styleClass="feature-text"/>
+                </HBox>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Advanced Analytics &amp; Reports" styleClass="feature-text"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+    
+    <!-- Right Side - Login Form -->
+    <center>
+        <VBox alignment="CENTER" styleClass="login-right">
+            <padding>
+                <Insets top="50" right="80" bottom="50" left="80"/>
+            </padding>
+            
+            <VBox fx:id="loginBox" spacing="25" alignment="CENTER" styleClass="login-box" maxWidth="400">
+                <padding>
+                    <Insets top="40" right="40" bottom="40" left="40"/>
+                </padding>
+                
+                <Text text="Welcome Back!" styleClass="login-title"/>
+                <Text text="Sign in to continue to your dashboard" styleClass="login-subtitle"/>
+                
+                <VBox spacing="8">
+                    <Label text="Email Address" styleClass="form-label"/>
+                    <TextField fx:id="emailField" promptText="Enter your email" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Password" styleClass="form-label"/>
+                    <PasswordField fx:id="passwordField" promptText="Enter your password" styleClass="form-input"/>
+                </VBox>
+                
+                <Label fx:id="errorLabel" text="Error message" styleClass="error-label" wrapText="true"/>
+                
+                <Button fx:id="loginButton" text="Sign In" onAction="#handleLogin" 
+                        styleClass="primary-button" maxWidth="Infinity"/>
+                
+                <HBox spacing="5" alignment="CENTER">
+                    <Text text="Default Admin:" styleClass="hint-text"/>
+                    <Text text="mohammedbasit362@gmail.com" styleClass="hint-text-bold"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
