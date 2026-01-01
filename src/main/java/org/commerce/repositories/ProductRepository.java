@@ -78,6 +78,45 @@ public class ProductRepository extends BaseRepository implements IProductReposit
         return exists(connection, SQL, productName);
     }
     
+    @Override
+    public List<Product> searchProducts(String searchTerm, Connection connection) {
+        // Uses GIN trigram indexes for optimized pattern matching
+        String SQL = "SELECT * FROM products " +
+                     "WHERE product_name ILIKE ? OR description ILIKE ? " +
+                     "ORDER BY product_name";
+        String pattern = "%" + searchTerm + "%";
+        return executeQueryList(connection, SQL, this::mapProduct, pattern, pattern);
+    }
+    
+    @Override
+    public List<Product> searchProductsByCategory(Integer categoryId, String searchTerm, Connection connection) {
+        // Uses composite index on category_id and product_name for optimization
+        StringBuilder SQL = new StringBuilder("SELECT * FROM products WHERE 1=1");
+        
+        if (categoryId != null) {
+            SQL.append(" AND category_id = ?");
+        }
+        
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            SQL.append(" AND (product_name ILIKE ? OR description ILIKE ?)");
+        }
+        
+        SQL.append(" ORDER BY product_name");
+        
+        // Build parameters dynamically
+        if (categoryId != null && searchTerm != null && !searchTerm.trim().isEmpty()) {
+            String pattern = "%" + searchTerm + "%";
+            return executeQueryList(connection, SQL.toString(), this::mapProduct, categoryId, pattern, pattern);
+        } else if (categoryId != null) {
+            return executeQueryList(connection, SQL.toString(), this::mapProduct, categoryId);
+        } else if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            String pattern = "%" + searchTerm + "%";
+            return executeQueryList(connection, SQL.toString(), this::mapProduct, pattern, pattern);
+        } else {
+            return getAllProducts(connection);
+        }
+    }
+    
     /**
      * Maps a ResultSet row to a Product entity.
      */

@@ -166,4 +166,43 @@ public class ProductService {
         int totalStock = productRepository.getTotalStock(productId, connection);
         return Result.success(totalStock);
     }
+    
+    /**
+     * Searches products by name or description (optimized with database indexes).
+     * 
+     * @param searchTerm The search term (case-insensitive)
+     * @return Result containing list of matching products
+     */
+    public Result<List<Product>> searchProducts(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return getAllProducts();
+        }
+        
+        List<Product> products = productRepository.searchProducts(searchTerm.trim(), connection);
+        return Result.success(products, "Found " + products.size() + " product(s)");
+    }
+    
+    /**
+     * Searches products with optional category filter and search term (optimized).
+     * 
+     * @param categoryId The category ID (null for all categories)
+     * @param searchTerm The search term (null or empty for no search filter)
+     * @return Result containing list of matching products
+     */
+    public Result<List<Product>> searchProductsByCategory(Integer categoryId, String searchTerm) {
+        // Validate category if provided
+        if (categoryId != null && categoryId > 0) {
+            if (!categoryRepository.exists(categoryId, connection)) {
+                throw new EntityNotFoundException("Category", categoryId);
+            }
+        }
+        
+        List<Product> products = productRepository.searchProductsByCategory(
+            categoryId, 
+            searchTerm != null ? searchTerm.trim() : null, 
+            connection
+        );
+        
+        return Result.success(products, "Found " + products.size() + " product(s)");
+    }
 }

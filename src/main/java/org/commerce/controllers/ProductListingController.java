@@ -8,12 +8,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import org.commerce.ECommerceApp;
+import org.commerce.common.PerformanceMonitor;
 import org.commerce.common.Result;
 import org.commerce.entities.Categories;
 import org.commerce.entities.Product;
 import org.commerce.entities.User;
 
-import java.math.BigDecimal;
+// import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -145,29 +146,39 @@ public class ProductListingController {
 
     private void filterProducts() {
         String selectedCategory = categoryFilter.getValue();
-        String searchText = searchField.getText().toLowerCase().trim();
+        String searchText = searchField.getText().trim();
         
-        List<Product> filtered = allProducts.stream()
-            .filter(p -> {
-                // Category filter
-                boolean categoryMatch = selectedCategory.equals("All Categories");
-                if (!categoryMatch) {
-                    Result<Categories> catResult = ECommerceApp.getCategoryService().getCategoryById(p.getCategoryId());
-                    if (catResult.isSuccess()) {
-                        categoryMatch = catResult.getData().getCategoryName().equals(selectedCategory);
-                    }
+        // Determine category ID for database query
+        Integer categoryId = null;
+        if (!selectedCategory.equals("All Categories")) {
+            for (Categories cat : categories) {
+                if (cat.getCategoryName().equals(selectedCategory)) {
+                    categoryId = cat.getId();
+                    break;
                 }
-                
-                // Search filter
-                boolean searchMatch = searchText.isEmpty() || 
-                                     p.getProductName().toLowerCase().contains(searchText) ||
-                                     (p.getDescription() != null && p.getDescription().toLowerCase().contains(searchText));
-                
-                return categoryMatch && searchMatch;
-            })
-            .toList();
+            }
+        }
         
-        displayProducts(filtered);
+        // Use optimized database search instead of in-memory filtering
+        // This leverages PostgreSQL indexes for better performance
+        long startTime = PerformanceMonitor.startTiming("Product Search");
+        
+        Result<List<Product>> result = ECommerceApp.getProductService()
+            .searchProductsByCategory(categoryId, searchText.isEmpty() ? null : searchText);
+        
+        long duration = PerformanceMonitor.endTiming("Product Search", startTime);
+        
+        if (result.isSuccess()) {
+            allProducts.clear();
+            allProducts.addAll(result.getData());
+            displayProducts(allProducts);
+            
+            // Show performance info in console (can be viewed in logs)
+            System.out.printf("[SEARCH] Found %d products in %d ms (Category: %s, Search: '%s')%n",
+                allProducts.size(), duration, selectedCategory, searchText);
+        } else {
+            showAlert("Error", "Search failed: " + result.getMessage());
+        }
     }
 
     @FXML

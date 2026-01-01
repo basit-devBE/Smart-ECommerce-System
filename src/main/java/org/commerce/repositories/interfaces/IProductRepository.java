@@ -70,4 +70,23 @@ public interface IProductRepository {
      * @return true if product exists, false otherwise
      */
     boolean existsByName(String productName, Connection connection);
+    
+    /**
+     * Searches products by name or description (case-insensitive, optimized with indexes).
+     * 
+     * @param searchTerm The search term to match against product name or description
+     * @param connection The database connection
+     * @return List of products matching the search term
+     */
+    List<Product> searchProducts(String searchTerm, Connection connection);
+    
+    /**
+     * Searches products by category and optional search term (optimized).
+     * 
+     * @param categoryId The category ID to filter by (null for all categories)
+     * @param searchTerm The search term (null or empty for no search filter)
+     * @param connection The database connection
+     * @return List of products matching the criteria
+     */
+    List<Product> searchProductsByCategory(Integer categoryId, String searchTerm, Connection connection);
 }
