@@ -38,3 +38,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+run.sh
+JAVAFX_UI_README.md
