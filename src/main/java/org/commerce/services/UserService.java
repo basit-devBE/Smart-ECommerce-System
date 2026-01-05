@@ -1,8 +1,11 @@
 package org.commerce.services;
 
 import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.commerce.common.CacheManager;
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
 import org.commerce.entities.User;
@@ -15,14 +18,27 @@ import org.commerce.validators.UserValidator;
 /**
  * Service layer for User business logic.
  * Handles validation, business rules, and delegates to repository.
+ * Implements session-based caching for logged-in users.
  */
 public class UserService {
     private final Connection connection;
     private final IUserRepository userRepository;
+    
+    // Cache for individual users (by ID) - 10 minute TTL, max 100 entries
+    private final CacheManager<Integer, User> userCache;
+    
+    // Cache for user lookups by email - 5 minute TTL, max 100 entries
+    private final CacheManager<String, User> emailCache;
+    
+    // In-memory Map for active user sessions
+    private final Map<Integer, User> activeSessionsCache;
 
     public UserService(Connection connection) {
         this.connection = connection;
         this.userRepository = new UserRepository();
+        this.userCache = new CacheManager<>(600000, 100); // 10 min, 100 entries
+        this.emailCache = new CacheManager<>(300000, 100); // 5 min, 100 entries
+        this.activeSessionsCache = new HashMap<>();
     }
 
     /**
@@ -45,6 +61,10 @@ public class UserService {
         
         // Create user
         User created = userRepository.createUser(user, connection);
+        
+        // Invalidate caches after creation
+        invalidateAllCaches();
+        
         return Result.success(created, "User created successfully");
     }
 
@@ -66,6 +86,11 @@ public class UserService {
         }
         
         boolean deleted = userRepository.deleteUser(userId, connection);
+        
+        // Invalidate caches and remove from active sessions
+        invalidateAllCaches();
+        activeSessionsCache.remove(userId);
+        
         return Result.success(deleted, "User deleted successfully");
     }
 
@@ -114,11 +139,18 @@ public class UserService {
         }
 
         User updated = userRepository.updateUser(existingUser, connection);
+        
+        // Invalidate caches and update active session
+        invalidateAllCaches();
+        if (activeSessionsCache.containsKey(updated.getId())) {
+            activeSessionsCache.put(updated.getId(), updated);
+        }
+        
         return Result.success(updated, "User updated successfully");
     }
 
     /**
-     * Retrieves a user by ID.
+     * Retrieves a user by ID (with caching).
      * 
      * @param userId The user ID
      * @return Result containing the user or error message
@@ -128,7 +160,16 @@ public class UserService {
             return Result.failure("Invalid user ID");
         }
 
-        User user = userRepository.getUserById(userId, connection);
+        // Check active sessions first (fastest)
+        if (activeSessionsCache.containsKey(userId)) {
+            return Result.success(activeSessionsCache.get(userId));
+        }
+
+        // Then check cache
+        User user = userCache.get(userId, () -> 
+            userRepository.getUserById(userId, connection)
+        );
+        
         if (user == null) {
             throw new EntityNotFoundException("User", userId);
         }
@@ -148,6 +189,7 @@ public class UserService {
 
     /**
      * Authenticates a user with email and password.
+     * Stores user in active session cache upon successful login.
      * 
      * @param email The user's email
      * @param password The user's password
@@ -162,12 +204,63 @@ public class UserService {
             return Result.failure("Password is required");
         }
         
-        User user = userRepository.getUserByEmail(email, connection);
+        // Try email cache first
+        User user = emailCache.get(email, () -> 
+            userRepository.getUserByEmail(email, connection)
+        );
         
         if (user == null || !user.getPassword().equals(password)) {
             return Result.failure("Invalid email or password");
         }
         
+        // Store in active sessions for fast access
+        activeSessionsCache.put(user.getId(), user);
+        
         return Result.success(user, "Login successful");
+    }
+    
+    /**
+     * Logs out a user by removing from active session cache.
+     * 
+     * @param userId The user ID
+     */
+    public void logout(int userId) {
+        activeSessionsCache.remove(userId);
+    }
+    
+    /**
+     * Gets the currently active user from session cache.
+     * 
+     * @param userId The user ID
+     * @return User if in active session, null otherwise
+     */
+    public User getActiveUser(int userId) {
+        return activeSessionsCache.get(userId);
+    }
+    
+    /**
+     * Gets count of active user sessions.
+     */
+    public int getActiveSessionCount() {
+        return activeSessionsCache.size();
+    }
+    
+    /**
+     * Invalidates all user caches.
+     * Should be called after any create, update, or delete operation.
+     */
+    public void invalidateAllCaches() {
+        userCache.invalidateAll();
+        emailCache.invalidateAll();
+    }
+    
+    /**
+     * Gets cache statistics.
+     */
+    public String getCacheStats() {
+        return String.format(
+            "User Cache: %d entries, Email Cache: %d entries, Active Sessions: %d users",
+            userCache.size(), emailCache.size(), activeSessionsCache.size()
+        );
     }
 }

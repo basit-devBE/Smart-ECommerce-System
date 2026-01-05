@@ -17,16 +17,28 @@ import java.util.List;
 /**
  * Service layer for Inventory business logic.
  * Handles validation, business rules, and delegates to repository.
+ * Invalidates product stock cache when inventory changes.
  */
 public class InventoryService {
     private final Connection connection;
     private final IInventoryRepository inventoryRepository;
     private final IProductRepository productRepository;
+    private ProductService productService; // For cache invalidation
 
     public InventoryService(Connection connection) {
         this.connection = connection;
         this.inventoryRepository = new InventoryRepository();
         this.productRepository = new ProductRepository();
+    }
+    
+    /**
+     * Sets the ProductService reference for cache invalidation.
+     * Should be called after both services are instantiated.
+     * 
+     * @param productService The ProductService instance
+     */
+    public void setProductService(ProductService productService) {
+        this.productService = productService;
     }
 
     /**
@@ -63,6 +75,12 @@ public class InventoryService {
 
         // Create inventory
         Inventory created = inventoryRepository.createInventory(inventory, connection);
+        
+        // Invalidate product stock cache
+        if (productService != null) {
+            productService.invalidateStockCache(inventory.getProductId());
+        }
+        
         return Result.success(created, "Inventory created successfully");
     }
 
@@ -97,6 +115,12 @@ public class InventoryService {
         inventory.setId(existingInventory.getId());
 
         Inventory updated = inventoryRepository.updateInventory(inventory, connection);
+        
+        // Invalidate product stock cache
+        if (productService != null) {
+            productService.invalidateStockCache(inventory.getProductId());
+        }
+        
         return Result.success(updated, "Inventory updated successfully");
     }
 
@@ -110,10 +134,18 @@ public class InventoryService {
         if (inventoryId <= 0) {
             return Result.failure("Invalid inventory ID");
         }
-
+        
+        // Get inventory before deletion to know which product to invalidate
+        Inventory inventory = inventoryRepository.getInventoryById(inventoryId, connection);
+        
         boolean deleted = inventoryRepository.deleteInventory(inventoryId, connection);
         if (!deleted) {
             throw new EntityNotFoundException("Inventory", inventoryId);
+        }
+        
+        // Invalidate product stock cache if inventory was found
+        if (inventory != null && productService != null) {
+            productService.invalidateStockCache(inventory.getProductId());
         }
 
         return Result.success(deleted, "Inventory deleted successfully");
