@@ -107,8 +107,7 @@ public class InventoryService {
         if (existingInventory == null) {
             throw new EntityNotFoundException(
                 "Inventory for product " + inventory.getProductId() + 
-                " at warehouse " + inventory.getWarehouseLocation()
-            );
+                " at warehouse " + inventory.getWarehouseLocation());
         }
 
         // Set the ID from existing record
@@ -232,6 +231,11 @@ public class InventoryService {
 
         inventory.setQuantity(newQuantity);
         Inventory updated = inventoryRepository.updateInventory(inventory, connection);
+        
+        // Invalidate product stock cache
+        if (productService != null) {
+            productService.invalidateStockCache(productId);
+        }
         
         return Result.success(updated, "Inventory adjusted successfully");
     }

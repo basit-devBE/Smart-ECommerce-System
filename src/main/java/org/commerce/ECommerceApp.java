@@ -58,6 +58,9 @@ public class ECommerceApp extends Application {
         // Seed admin user if it doesn't exist
         seedAdminUser();
         
+        // Seed sample data (categories, products, inventory)
+        seedData();
+        
         // Load login view
         showLoginView();
         
@@ -142,6 +145,16 @@ public class ECommerceApp extends Application {
             System.err.println("✗ Failed to create admin user: " + result.getMessage());
         }
     }
+    
+    private static void seedData() {
+        try {
+            SeedData seeder = new SeedData(connection);
+            seeder.seedAll();
+        } catch (Exception e) {
+            System.err.println("Note: Sample data seeding skipped (may already exist)");
+        }
+    }
+    
     public static Stage getPrimaryStage() {
         return primaryStage;
     }
