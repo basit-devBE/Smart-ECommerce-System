@@ -25,6 +25,8 @@
                 <Label fx:id="userRoleLabel" text="ADMIN" styleClass="role-badge"/>
             </VBox>
             
+            <Button text="Cache Stats" onAction="#handleShowCacheStats" styleClass="info-button"/>
+            <Button text="Clear Cache" onAction="#handleClearCache" styleClass="warning-button"/>
             <Button text="Refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
             <Button text="Logout" onAction="#handleLogout" styleClass="logout-button"/>
         </HBox>

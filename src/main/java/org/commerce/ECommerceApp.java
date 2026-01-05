@@ -43,6 +43,9 @@ public class ECommerceApp extends Application {
         categoryService = new CategoryService(connection);
         inventoryService = new InventoryService(connection);
         
+        // Wire up inventory service with product service for cache invalidation
+        inventoryService.setProductService(productService);
+        
         // Initialize database tables
         UsersModel.initializeTable(connection);
         CategoriesModel.initializeTable(connection);

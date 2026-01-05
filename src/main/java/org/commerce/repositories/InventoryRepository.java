@@ -51,6 +51,12 @@ public class InventoryRepository extends BaseRepository implements IInventoryRep
     }
     
     @Override
+    public Inventory getInventoryById(int inventoryId, Connection connection) {
+        String SQL = "SELECT * FROM inventory WHERE id = ?";
+        return executeQuerySingle(connection, SQL, this::mapInventory, inventoryId);
+    }
+    
+    @Override
     public List<Inventory> getInventoryByProductId(int productId, Connection connection) {
         String SQL = "SELECT * FROM inventory WHERE product_id = ?";
         return executeQueryList(connection, SQL, this::mapInventory, productId);

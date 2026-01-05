@@ -46,16 +46,36 @@
                     <Insets top="15" right="20" bottom="15" left="20"/>
                 </padding>
                 
-                <Label text="Filter:" styleClass="filter-label"/>
-                
+                <Label text="Category:" styleClass="filter-label"/>
                 <ComboBox fx:id="categoryFilter" promptText="Select Category" 
-                         styleClass="filter-combo" prefWidth="200"/>
+                         styleClass="filter-combo" prefWidth="180"/>
+                
+                <Label text="Sort by:" styleClass="filter-label"/>
+                <ComboBox fx:id="sortComboBox" promptText="Sort..." 
+                         styleClass="filter-combo" prefWidth="180"/>
                 
                 <Region HBox.hgrow="ALWAYS"/>
                 
                 <Label text="Search:" styleClass="filter-label"/>
                 <TextField fx:id="searchField" promptText="Search products..." 
-                          styleClass="search-field" prefWidth="300"/>
+                          styleClass="search-field" prefWidth="250"/>
+                
+                <Button text="Clear Cache" onAction="#handleClearCache" 
+                       styleClass="secondary-button" prefWidth="100"/>
+            </HBox>
+            
+            <!-- Performance Stats -->
+            <HBox spacing="15" alignment="CENTER_LEFT" styleClass="stats-bar">
+                <padding>
+                    <Insets top="5" right="20" bottom="5" left="20"/>
+                </padding>
+                <Label fx:id="performanceLabel" text="⚡ Ready to load..." 
+                       styleClass="performance-label"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="cacheStatsLabel" text="📊 Cache: 0 entries" 
+                       styleClass="cache-stats-label"/>
+                <Button text="Stats" onAction="#handleShowCacheStats" 
+                       styleClass="secondary-button" prefWidth="70"/>
             </HBox>
             
             <!-- Products Grid -->

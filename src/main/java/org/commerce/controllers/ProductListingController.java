@@ -26,6 +26,9 @@ public class ProductListingController {
     @FXML private FlowPane productsContainer;
     @FXML private ComboBox<String> categoryFilter;
     @FXML private TextField searchField;
+    @FXML private ComboBox<String> sortComboBox;
+    @FXML private Label cacheStatsLabel;
+    @FXML private Label performanceLabel;
     
     private ObservableList<Product> allProducts = FXCollections.observableArrayList();
     private ObservableList<Categories> categories = FXCollections.observableArrayList();
@@ -38,8 +41,25 @@ public class ProductListingController {
         }
 
         loadCategories();
-        loadProducts();
+        setupSortComboBox();
         setupFilters();
+        loadProducts();
+        updateCacheStats();
+    }
+    
+    private void setupSortComboBox() {
+        if (sortComboBox != null) {
+            sortComboBox.getItems().addAll(
+                "Name (A-Z)",
+                "Name (Z-A)",
+                "Price: Low to High",
+                "Price: High to Low",
+                "Newest First",
+                "Oldest First"
+            );
+            sortComboBox.setValue("Name (A-Z)");
+            sortComboBox.setOnAction(e -> loadProducts());
+        }
     }
 
     private void loadCategories() {
@@ -58,13 +78,52 @@ public class ProductListingController {
         productsContainer.getChildren().clear();
         allProducts.clear();
         
-        Result<List<Product>> result = ECommerceApp.getProductService().getAllProducts();
+        // Measure performance
+        long startTime = System.nanoTime();
+        
+        // Get sort option
+        String sortOption = getSortOptionKey();
+        
+        Result<List<Product>> result = ECommerceApp.getProductService().getAllProductsSorted(sortOption);
+        
+        long duration = (System.nanoTime() - startTime) / 1_000_000; // Convert to ms
         
         if (result.isSuccess()) {
             allProducts.addAll(result.getData());
             displayProducts(allProducts);
+            
+            // Show performance info
+            if (performanceLabel != null) {
+                performanceLabel.setText(String.format("⚡ Loaded %d products in %dms (Cached: %s)", 
+                    allProducts.size(), duration, duration < 10 ? "YES" : "NO"));
+                performanceLabel.setStyle("-fx-text-fill: " + (duration < 10 ? "#10b981" : "#f59e0b") + ";");
+            }
         } else {
-            showAlert("Error", "Failed to load products: " + result.getMessage());
+            showAlert("Error", result.getMessage());
+        }
+        
+        updateCacheStats();
+    }
+    
+    private String getSortOptionKey() {
+        if (sortComboBox == null || sortComboBox.getValue() == null) {
+            return "name";
+        }
+        
+        return switch (sortComboBox.getValue()) {
+            case "Name (Z-A)" -> "name_desc";
+            case "Price: Low to High" -> "price_asc";
+            case "Price: High to Low" -> "price_desc";
+            case "Newest First" -> "newest";
+            case "Oldest First" -> "oldest";
+            default -> "name";
+        };
+    }
+    
+    private void updateCacheStats() {
+        if (cacheStatsLabel != null) {
+            String stats = ECommerceApp.getProductService().getCacheStats();
+            cacheStatsLabel.setText("📊 " + stats);
         }
     }
 
@@ -189,8 +248,30 @@ public class ProductListingController {
 
     @FXML
     private void handleRefresh() {
+        // Clear cache and reload to show difference
+        ECommerceApp.getProductService().invalidateAllCaches();
+        updateCacheStats();
         loadProducts();
-        showAlert("Refreshed", "Product list has been refreshed!");
+    }
+    
+    @FXML
+    private void handleClearCache() {
+        ECommerceApp.getProductService().invalidateAllCaches();
+        ECommerceApp.getCategoryService().invalidateAllCaches();
+        updateCacheStats();
+        showAlert("Success", "All caches cleared! Next queries will hit database.");
+    }
+    
+    @FXML
+    private void handleShowCacheStats() {
+        String productStats = ECommerceApp.getProductService().getCacheStats();
+        String categoryStats = ECommerceApp.getCategoryService().getCacheStats();
+        String userStats = ECommerceApp.getUserService().getCacheStats();
+        
+        showAlert("Cache Statistics", 
+            "Product Service:\n  " + productStats + "\n\n" +
+            "Category Service:\n  " + categoryStats + "\n\n" +
+            "User Service:\n  " + userStats);
     }
 
     @FXML

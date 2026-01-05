@@ -289,8 +289,39 @@ public class DashboardController {
 
     @FXML
     private void handleRefresh() {
+        long startTime = System.nanoTime();
         loadAllData();
-        showAlert("Refreshed", "All data has been refreshed successfully!");
+        long duration = (System.nanoTime() - startTime) / 1_000_000;
+        
+        showAlert("Refreshed", String.format("Data refreshed successfully in %dms!\n\n%s", 
+            duration,
+            getCacheStatsMessage()));
+    }
+    
+    private String getCacheStatsMessage() {
+        return "Cache Statistics:\n" +
+               "• " + ECommerceApp.getProductService().getCacheStats() + "\n" +
+               "• " + ECommerceApp.getCategoryService().getCacheStats() + "\n" +
+               "• " + ECommerceApp.getUserService().getCacheStats();
+    }
+    
+    @FXML
+    private void handleShowCacheStats() {
+        String stats = "📊 Cache Performance Statistics\n\n" +
+                      "Product Service:\n  " + ECommerceApp.getProductService().getCacheStats() + "\n\n" +
+                      "Category Service:\n  " + ECommerceApp.getCategoryService().getCacheStats() + "\n\n" +
+                      "User Service:\n  " + ECommerceApp.getUserService().getCacheStats() + "\n\n" +
+                      "💡 Tip: Click 'Clear Cache' then 'Refresh' to see database query time vs cache hit time.";
+        
+        showAlert("Cache Statistics", stats);
+    }
+    
+    @FXML
+    private void handleClearCache() {
+        ECommerceApp.getProductService().invalidateAllCaches();
+        ECommerceApp.getCategoryService().invalidateAllCaches();
+        ECommerceApp.getUserService().invalidateAllCaches();
+        showAlert("Success", "All caches cleared!\n\nNext data load will query the database directly.\nClick 'Refresh' to see the difference in performance.");
     }
 
     @FXML
