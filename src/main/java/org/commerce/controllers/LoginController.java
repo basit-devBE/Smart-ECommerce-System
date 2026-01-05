@@ -56,6 +56,15 @@ public class LoginController {
         if (result.isSuccess()) {
             currentUser = result.getData();
             
+            // Log successful login
+            ECommerceApp.getActivityLogService().logActivity(
+                currentUser.getId(),
+                currentUser.getFirstname() + " " + currentUser.getLastname(),
+                "LOGIN",
+                "USER",
+                currentUser.getId()
+            );
+            
             // Route based on user role
             try {
                 if (currentUser.getUserRole() == UserRole.CUSTOMER) {
@@ -69,6 +78,13 @@ public class LoginController {
                 showError("Error loading application: " + e.getMessage());
             }
         } else {
+            // Log failed login attempt
+            ECommerceApp.getActivityLogService().logActivity(
+                0,
+                email,
+                "LOGIN_FAILED"
+            );
+            
             showError(result.getMessage());
             passwordField.clear();
         }

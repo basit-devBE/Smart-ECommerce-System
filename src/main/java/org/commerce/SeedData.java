@@ -270,16 +270,7 @@ public class SeedData {
             
             // Automotive
             {"Garmin DriveSmart 65", "GPS navigator", "249.99"},
-            {"Anker Roav DashCam", "1080p dash camera", "99.99"},
-            {"WeatherTech Floor Mats", "All-weather car mats", "159.99"},
-            {"Michelin Wiper Blades", "22-inch pair", "29.99"},
-            
-            // Office Supplies
-            {"Pilot G2 Pens", "0.7mm black 12-pack", "12.99"},
-            {"Moleskine Notebook", "Classic hardcover ruled", "19.99"},
-            {"3M Post-it Notes", "3x3 inch 24-pack", "24.99"},
-            {"Swingline Stapler", "Heavy-duty stapler", "34.99"},
-            {"HP OfficeJet Pro", "All-in-one wireless printer", "229.99"}
+            {"Anker Roav DashCam", "1080p dash camera", "99.99"}
         };
         
         List<Product> products = new ArrayList<>();

@@ -3,7 +3,7 @@ package org.commerce.entities;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class Product{
+public class  Product{
     private int id;
     private String productName;
     private String description;
