@@ -6,11 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.commerce.config.DBConfig;
+import org.commerce.config.MongoDBConfig;
 import org.commerce.models.*;
 import org.commerce.services.UserService;
 import org.commerce.services.ProductService;
 import org.commerce.services.CategoryService;
 import org.commerce.services.InventoryService;
+import org.commerce.services.ReviewService;
+import org.commerce.services.ActivityLogService;
 import org.commerce.entities.User;
 import org.commerce.enums.UserRole;
 import org.commerce.common.Result;
@@ -27,6 +30,8 @@ public class ECommerceApp extends Application {
     private static ProductService productService;
     private static CategoryService categoryService;
     private static InventoryService inventoryService;
+    private static ReviewService reviewService;
+    private static ActivityLogService activityLogService;
     private static Stage primaryStage;
 
     @Override
@@ -37,11 +42,18 @@ public class ECommerceApp extends Application {
         DBConfig dbConfig = new DBConfig();
         connection = dbConfig.connectDB();
         
-        // Initialize services
+        // Initialize MongoDB
+        MongoDBConfig.initialize();
+        
+        // Initialize PostgreSQL services
         userService = new UserService(connection);
         productService = new ProductService(connection);
         categoryService = new CategoryService(connection);
         inventoryService = new InventoryService(connection);
+        
+        // Initialize MongoDB services
+        reviewService = new ReviewService();
+        activityLogService = new ActivityLogService();
         
         // Wire up inventory service with product service for cache invalidation
         inventoryService.setProductService(productService);
@@ -59,7 +71,12 @@ public class ECommerceApp extends Application {
         seedAdminUser();
         
         // Seed sample data (categories, products, inventory)
-        seedData();
+        // seedData();
+        
+        // Log application startup
+        if (activityLogService != null) {
+            activityLogService.logActivity(0, "System", "APP_START");
+        }
         
         // Load login view
         showLoginView();
@@ -96,6 +113,12 @@ public class ECommerceApp extends Application {
     }
 
     private void closeConnection() {
+        // Log application shutdown
+        if (activityLogService != null) {
+            activityLogService.logActivity(0, "System", "APP_STOP");
+        }
+        
+        // Close PostgreSQL
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -104,6 +127,9 @@ public class ECommerceApp extends Application {
         } catch (SQLException e) {
             System.err.println("Error closing connection: " + e.getMessage());
         }
+        
+        // Close MongoDB
+        MongoDBConfig.close();
     }
 
     public static Connection getConnection() {
@@ -124,6 +150,14 @@ public class ECommerceApp extends Application {
 
     public static InventoryService getInventoryService() {
         return inventoryService;
+    }
+    
+    public static ReviewService getReviewService() {
+        return reviewService;
+    }
+    
+    public static ActivityLogService getActivityLogService() {
+        return activityLogService;
     }
 
     
