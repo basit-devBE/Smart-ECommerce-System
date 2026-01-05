@@ -37,6 +37,15 @@ public interface IInventoryRepository {
     boolean deleteInventory(int inventoryId, Connection connection);
     
     /**
+     * Retrieves an inventory record by its ID.
+     * 
+     * @param inventoryId The inventory ID
+     * @param connection The database connection
+     * @return The inventory record if found, null otherwise
+     */
+    Inventory getInventoryById(int inventoryId, Connection connection);
+    
+    /**
      * Retrieves all inventory records for a specific product.
      * 
      * @param productId The product ID
