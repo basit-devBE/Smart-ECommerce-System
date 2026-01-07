@@ -71,7 +71,7 @@ public class ECommerceApp extends Application {
         seedAdminUser();
         
         // Seed sample data (categories, products, inventory)
-        // seedData();
+        seedData();
         
         // Log application startup
         if (activityLogService != null) {
@@ -166,7 +166,7 @@ public class ECommerceApp extends Application {
         user.setFirstname("Admin");
         user.setLastname("User");
         user.setEmail("mohammedbasit362@gmail.com");
-        user.setPassword("bece2018");
+        user.setPassword("bece2018");  // Will be hashed by UserService
         user.setPhone("0257323294");
         user.setUserRole(UserRole.ADMIN);
         

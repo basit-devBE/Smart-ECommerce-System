@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.commerce.common.CacheManager;
+import org.commerce.common.PasswordHasher;
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
 import org.commerce.entities.User;
@@ -57,6 +58,11 @@ public class UserService {
         // Business rule: Email must be unique
         if (userRepository.existsByEmail(user.getEmail(), connection)) {
             return Result.failure("User with email '" + user.getEmail() + "' already exists");
+        }
+        
+        // Hash password before storing
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(PasswordHasher.hashPassword(user.getPassword()));
         }
         
         // Create user
@@ -129,7 +135,8 @@ public class UserService {
             existingUser.setEmail(user.getEmail());
         }
         if (user.getPassword() != null && user.getPassword().length() >= 6) {
-            existingUser.setPassword(user.getPassword());
+            // Hash the new password before storing
+            existingUser.setPassword(PasswordHasher.hashPassword(user.getPassword()));
         }
         if (user.getPhone() != null && !user.getPhone().isEmpty()) {
             existingUser.setPhone(user.getPhone());
@@ -209,7 +216,12 @@ public class UserService {
             userRepository.getUserByEmail(email, connection)
         );
         
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null) {
+            return Result.failure("Invalid email or password");
+        }
+        
+        // Verify password using BCrypt
+        if (!PasswordHasher.verifyPassword(password, user.getPassword())) {
             return Result.failure("Invalid email or password");
         }
         

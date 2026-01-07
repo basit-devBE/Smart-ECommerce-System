@@ -27,6 +27,12 @@
             <artifactId>mongodb-driver-sync</artifactId>
             <version>5.7.0-alpha0</version>
         </dependency>
+        <!-- BCrypt for password hashing -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
         
         <!-- JavaFX Dependencies -->
         <dependency>
