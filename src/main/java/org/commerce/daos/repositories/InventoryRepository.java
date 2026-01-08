@@ -1,12 +1,12 @@
-package org.commerce.repositories;
+package org.commerce.daos.repositories;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.commerce.entities.Inventory;
-import org.commerce.repositories.interfaces.IInventoryRepository;
+import org.commerce.daos.entities.Inventory;
+import org.commerce.daos.repositories.interfaces.IInventoryRepository;
 
 /**
  * Repository implementation for Inventory entity operations.

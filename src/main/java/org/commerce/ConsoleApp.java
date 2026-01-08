@@ -2,12 +2,12 @@ package org.commerce;
 
 import org.commerce.common.Result;
 import org.commerce.config.DBConfig;
-import org.commerce.entities.User;
-import org.commerce.entities.Product;
-import org.commerce.entities.Categories;
-import org.commerce.entities.Inventory;
+import org.commerce.daos.entities.User;
+import org.commerce.daos.entities.Product;
+import org.commerce.daos.entities.Categories;
+import org.commerce.daos.entities.Inventory;
 import org.commerce.enums.UserRole;
-import org.commerce.models.*;
+import org.commerce.daos.models.*;
 import org.commerce.services.UserService;
 import org.commerce.services.ProductService;
 import org.commerce.services.CategoryService;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleApp {
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     private static UserService userService;
     private static ProductService productService;
     private static CategoryService categoryService;

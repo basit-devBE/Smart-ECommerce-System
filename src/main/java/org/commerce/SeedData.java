@@ -1,8 +1,8 @@
 package org.commerce;
 
-import org.commerce.entities.Categories;
-import org.commerce.entities.Inventory;
-import org.commerce.entities.Product;
+import org.commerce.daos.entities.Categories;
+import org.commerce.daos.entities.Inventory;
+import org.commerce.daos.entities.Product;
 import org.commerce.services.CategoryService;
 import org.commerce.services.InventoryService;
 import org.commerce.services.ProductService;

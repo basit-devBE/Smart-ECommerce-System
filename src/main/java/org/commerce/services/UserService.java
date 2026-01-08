@@ -9,11 +9,11 @@ import org.commerce.common.CacheManager;
 import org.commerce.common.PasswordHasher;
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.User;
+import org.commerce.daos.entities.User;
 import org.commerce.exceptions.DuplicateEntityException;
 import org.commerce.exceptions.EntityNotFoundException;
-import org.commerce.repositories.UserRepository;
-import org.commerce.repositories.interfaces.IUserRepository;
+import org.commerce.daos.repositories.UserRepository;
+import org.commerce.daos.repositories.interfaces.IUserRepository;
 import org.commerce.validators.UserValidator;
 
 /**

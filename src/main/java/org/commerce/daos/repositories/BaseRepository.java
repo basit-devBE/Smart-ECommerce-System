@@ -1,4 +1,4 @@
-package org.commerce.repositories;
+package org.commerce.daos.repositories;
 
 import org.commerce.exceptions.RepositoryException;
 

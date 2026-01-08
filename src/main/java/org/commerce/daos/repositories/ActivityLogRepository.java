@@ -1,10 +1,10 @@
-package org.commerce.repositories;
+package org.commerce.daos.repositories;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import org.bson.Document;
 import org.commerce.config.MongoDBConfig;
-import org.commerce.entities.ActivityLog;
+import org.commerce.daos.entities.ActivityLog;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package org.commerce.validators;
 
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.Inventory;
+import org.commerce.daos.entities.Inventory;
 
 /**
  * Validator for Inventory entity.

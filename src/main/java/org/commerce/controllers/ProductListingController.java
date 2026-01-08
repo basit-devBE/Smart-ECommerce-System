@@ -11,10 +11,10 @@ import javafx.scene.text.Text;
 import org.commerce.ECommerceApp;
 import org.commerce.common.PerformanceMonitor;
 import org.commerce.common.Result;
-import org.commerce.entities.Categories;
-import org.commerce.entities.Product;
-import org.commerce.entities.User;
-import org.commerce.entities.Review;
+import org.commerce.daos.entities.Categories;
+import org.commerce.daos.entities.Product;
+import org.commerce.daos.entities.User;
+import org.commerce.daos.entities.Review;
 
 // import java.math.BigDecimal;
 import java.util.List;

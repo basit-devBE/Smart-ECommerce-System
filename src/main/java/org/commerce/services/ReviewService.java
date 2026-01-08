@@ -2,8 +2,8 @@ package org.commerce.services;
 
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.Review;
-import org.commerce.repositories.ReviewRepository;
+import org.commerce.daos.entities.Review;
+import org.commerce.daos.repositories.ReviewRepository;
 
 import java.util.List;
 

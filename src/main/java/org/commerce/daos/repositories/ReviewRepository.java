@@ -1,4 +1,4 @@
-package org.commerce.repositories;
+package org.commerce.daos.repositories;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
@@ -6,7 +6,7 @@ import com.mongodb.client.model.Updates;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.commerce.config.MongoDBConfig;
-import org.commerce.entities.Review;
+import org.commerce.daos.entities.Review;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

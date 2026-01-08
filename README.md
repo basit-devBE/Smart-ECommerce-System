@@ -98,25 +98,31 @@ The system leverages a hybrid database architecture using PostgreSQL for transac
 
 ## 🏗️ Architecture
 
-### Application Architecture
+### Application Architecture (MVC + DAO Pattern)
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    JavaFX UI Layer                       │
-│  (Controllers: Login, Dashboard, ProductListing)         │
+│              Controllers (Presentation Layer)            │
+│  LoginController, DashboardController, ProductListing    │
 └─────────────────────┬───────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────┐
-│                   Service Layer                          │
-│  (UserService, ProductService, CategoryService,          │
-│   InventoryService, ReviewService, ActivityLogService)   │
+│                Services (Business Logic)                 │
+│  UserService, ProductService, CategoryService,           │
+│  InventoryService, ReviewService, ActivityLogService     │
+└─────────────────────┬───────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────┐
+│                   DAOs (Data Access)                     │
+│  ├─ Entities (Domain Models)                             │
+│  ├─ Repositories (Data Operations)                       │
+│  └─ Models (Table Initializers)                          │
 └─────────────────────┬───────────────────────────────────┘
                       │
         ┌─────────────┼─────────────┐
         │                           │
 ┌───────▼──────────┐      ┌────────▼─────────┐
-│  Repository Layer │      │ Repository Layer  │
-│   (PostgreSQL)    │      │    (MongoDB)      │
+│  PostgreSQL Repos │      │  MongoDB Repos    │
 │   - Users         │      │   - Reviews       │
 │   - Products      │      │   - ActivityLogs  │
 │   - Categories    │      │                   │
@@ -129,6 +135,14 @@ The system leverages a hybrid database architecture using PostgreSQL for transac
 │  (Transactional)  │      │  (Document Store) │
 └───────────────────┘      └───────────────────┘
 ```
+
+### Layer Responsibilities
+
+**Controllers → Services → DAOs**
+
+1. **Controllers**: Handle UI events, user input, and view updates
+2. **Services**: Business logic, validation, caching, transactions
+3. **DAOs**: Database operations, query execution, data mapping
 
 ### Hybrid Database Strategy
 
@@ -398,20 +412,44 @@ Smart-ECommerce-System/
 │   │   │   │   ├── DBConfig.java       # PostgreSQL configuration
 │   │   │   │   └── MongoDBConfig.java  # MongoDB Atlas configuration
 │   │   │   │
-│   │   │   ├── controllers/            # JavaFX controllers
+│   │   │   ├── controllers/            # JavaFX controllers (Presentation Layer)
 │   │   │   │   ├── LoginController.java      # Authentication UI
 │   │   │   │   ├── DashboardController.java  # Admin dashboard
 │   │   │   │   └── ProductListingController.java # Customer portal
 │   │   │   │
-│   │   │   ├── entities/               # Domain models
-│   │   │   │   ├── User.java           # User entity
-│   │   │   │   ├── Product.java        # Product entity
-│   │   │   │   ├── Categories.java     # Category entity
-│   │   │   │   ├── Inventory.java      # Inventory entity
-│   │   │   │   ├── Orders.java         # Order entity
-│   │   │   │   ├── OrderItems.java     # Order line items
-│   │   │   │   ├── Review.java         # Review entity (MongoDB)
-│   │   │   │   └── ActivityLog.java    # Activity log (MongoDB)
+│   │   │   ├── daos/                   # Data Access Objects (DAO Layer)
+│   │   │   │   ├── entities/           # Domain models
+│   │   │   │   │   ├── User.java           # User entity
+│   │   │   │   │   ├── Product.java        # Product entity
+│   │   │   │   │   ├── Categories.java     # Category entity
+│   │   │   │   │   ├── Inventory.java      # Inventory entity
+│   │   │   │   │   ├── Orders.java         # Order entity
+│   │   │   │   │   ├── OrderItems.java     # Order line items
+│   │   │   │   │   ├── Review.java         # Review entity (MongoDB)
+│   │   │   │   │   └── ActivityLog.java    # Activity log (MongoDB)
+│   │   │   │   │
+│   │   │   │   ├── models/             # Database table initializers
+│   │   │   │   │   ├── UsersModel.java
+│   │   │   │   │   ├── CategoriesModel.java
+│   │   │   │   │   ├── ProductsModel.java
+│   │   │   │   │   ├── InventoryModel.java
+│   │   │   │   │   ├── OrdersModel.java
+│   │   │   │   │   ├── OrderItemsModel.java
+│   │   │   │   │   └── ReviewsModel.java
+│   │   │   │   │
+│   │   │   │   └── repositories/       # Data access layer
+│   │   │   │       ├── interfaces/     # Repository contracts
+│   │   │   │       │   ├── IUserRepository.java
+│   │   │   │       │   ├── IProductRepository.java
+│   │   │   │       │   ├── ICategoryRepository.java
+│   │   │   │       │   └── IInventoryRepository.java
+│   │   │   │       ├── BaseRepository.java       # Base CRUD operations
+│   │   │   │       ├── UserRepository.java
+│   │   │   │       ├── ProductRepository.java
+│   │   │   │       ├── CategoryRepository.java
+│   │   │   │       ├── InventoryRepository.java
+│   │   │   │       ├── ReviewRepository.java     # MongoDB reviews
+│   │   │   │       └── ActivityLogRepository.java # MongoDB logs
 │   │   │   │
 │   │   │   ├── enums/                  # Enumerations
 │   │   │   │   └── UserRole.java       # User roles (ADMIN/CUSTOMER)
@@ -424,29 +462,6 @@ Smart-ECommerce-System/
 │   │   │   │   ├── RepositoryException.java
 │   │   │   │   ├── ServiceException.java
 │   │   │   │   └── ValidationException.java
-│   │   │   │
-│   │   │   ├── models/                 # Database table models
-│   │   │   │   ├── UsersModel.java
-│   │   │   │   ├── CategoriesModel.java
-│   │   │   │   ├── ProductsModel.java
-│   │   │   │   ├── InventoryModel.java
-│   │   │   │   ├── OrdersModel.java
-│   │   │   │   ├── OrderItemsModel.java
-│   │   │   │   └── ReviewsModel.java
-│   │   │   │
-│   │   │   ├── repositories/           # Data access layer
-│   │   │   │   ├── interfaces/         # Repository contracts
-│   │   │   │   │   ├── IUserRepository.java
-│   │   │   │   │   ├── IProductRepository.java
-│   │   │   │   │   ├── ICategoryRepository.java
-│   │   │   │   │   └── IInventoryRepository.java
-│   │   │   │   ├── BaseRepository.java       # Base CRUD operations
-│   │   │   │   ├── UserRepository.java
-│   │   │   │   ├── ProductRepository.java
-│   │   │   │   ├── CategoryRepository.java
-│   │   │   │   ├── InventoryRepository.java
-│   │   │   │   ├── ReviewRepository.java     # MongoDB reviews
-│   │   │   │   └── ActivityLogRepository.java # MongoDB logs
 │   │   │   │
 │   │   │   ├── services/               # Business logic layer
 │   │   │   │   ├── UserService.java
@@ -478,8 +493,6 @@ Smart-ECommerce-System/
 │   │       │   └── main.css
 │   │       └── db/                     # SQL scripts
 │   │           └── search_optimization.sql
-│   │
-├── target/                             # Compiled classes
 ├── pom.xml                             # Maven configuration
 ├── run.sh                              # Launch script
 └── README.md                           # This file

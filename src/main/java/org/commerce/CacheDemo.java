@@ -2,10 +2,10 @@ package org.commerce;
 
 import org.commerce.common.Result;
 import org.commerce.config.DBConfig;
-import org.commerce.entities.Categories;
-import org.commerce.entities.Product;
-import org.commerce.entities.User;
-import org.commerce.models.*;
+import org.commerce.daos.entities.Categories;
+import org.commerce.daos.entities.Product;
+import org.commerce.daos.entities.User;
+import org.commerce.daos.models.*;
 import org.commerce.services.CategoryService;
 import org.commerce.services.ProductService;
 import org.commerce.services.UserService;

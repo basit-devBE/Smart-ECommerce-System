@@ -3,10 +3,10 @@ package org.commerce.services;
 import org.commerce.common.CacheManager;
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.Categories;
+import org.commerce.daos.entities.Categories;
 import org.commerce.exceptions.EntityNotFoundException;
-import org.commerce.repositories.CategoryRepository;
-import org.commerce.repositories.interfaces.ICategoryRepository;
+import org.commerce.daos.repositories.CategoryRepository;
+import org.commerce.daos.repositories.interfaces.ICategoryRepository;
 import org.commerce.validators.CategoryValidator;
 
 import java.sql.Connection;

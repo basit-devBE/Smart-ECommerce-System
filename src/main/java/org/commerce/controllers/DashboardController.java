@@ -13,10 +13,10 @@ import javafx.scene.layout.VBox;
 // import javafx.stage.Stage;
 import org.commerce.ECommerceApp;
 import org.commerce.common.Result;
-import org.commerce.entities.Categories;
-import org.commerce.entities.Inventory;
-import org.commerce.entities.Product;
-import org.commerce.entities.User;
+import org.commerce.daos.entities.Categories;
+import org.commerce.daos.entities.Inventory;
+import org.commerce.daos.entities.Product;
+import org.commerce.daos.entities.User;
 
 import java.math.BigDecimal;
 import java.util.List;

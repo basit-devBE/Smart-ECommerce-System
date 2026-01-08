@@ -1,4 +1,4 @@
-package org.commerce.entities;
+package org.commerce.daos.entities;
 
 import java.time.LocalDateTime;
 

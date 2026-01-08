@@ -1,8 +1,8 @@
 package org.commerce.services;
 
 import org.commerce.common.Result;
-import org.commerce.entities.ActivityLog;
-import org.commerce.repositories.ActivityLogRepository;
+import org.commerce.daos.entities.ActivityLog;
+import org.commerce.daos.repositories.ActivityLogRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

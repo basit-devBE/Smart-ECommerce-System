@@ -1,13 +1,13 @@
-package org.commerce.repositories;
+package org.commerce.daos.repositories;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.commerce.entities.User;
+import org.commerce.daos.entities.User;
 import org.commerce.enums.UserRole;
-import org.commerce.repositories.interfaces.IUserRepository;
+import org.commerce.daos.repositories.interfaces.IUserRepository;
 
 /**
  * Repository implementation for User entity operations.

@@ -1,7 +1,7 @@
 package org.commerce.validators;
 
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.User;
+import org.commerce.daos.entities.User;
 
 /**
  * Validator for User entity.

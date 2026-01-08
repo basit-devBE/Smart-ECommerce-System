@@ -1,6 +1,6 @@
-package org.commerce.repositories.interfaces;
+package org.commerce.daos.repositories.interfaces;
 
-import org.commerce.entities.Categories;
+import org.commerce.daos.entities.Categories;
 import java.sql.Connection;
 import java.util.List;
 

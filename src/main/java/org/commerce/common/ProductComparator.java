@@ -1,6 +1,6 @@
 package org.commerce.common;
 
-import org.commerce.entities.Product;
+import org.commerce.daos.entities.Product;
 
 import java.util.Comparator;
 

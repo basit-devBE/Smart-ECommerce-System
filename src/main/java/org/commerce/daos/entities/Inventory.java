@@ -1,32 +1,28 @@
-package org.commerce.entities;
+package org.commerce.daos.entities;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class OrderItems {
+public class Inventory {
     private int id;
-    private int orderId;
     private int productId;
     private int quantity;
-    private BigDecimal price;
+    private String warehouseLocation;
     private LocalDateTime createdAt;
+    private LocalDateTime lastUpdated;
 
-    public OrderItems() {}
+    public Inventory() {}
 
-    public OrderItems(int id, int orderId, int productId, int quantity, BigDecimal price, LocalDateTime createdAt) {
+    public Inventory(int id, int productId, int quantity, String warehouseLocation, LocalDateTime createdAt, LocalDateTime lastUpdated) {
         this.id = id;
-        this.orderId = orderId;
         this.productId = productId;
         this.quantity = quantity;
-        this.price = price;
+        this.warehouseLocation = warehouseLocation;
         this.createdAt = createdAt;
+        this.lastUpdated = lastUpdated;
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-
-    public int getOrderId() { return orderId; }
-    public void setOrderId(int orderId) { this.orderId = orderId; }
 
     public int getProductId() { return productId; }
     public void setProductId(int productId) { this.productId = productId; }
@@ -34,10 +30,12 @@ public class OrderItems {
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public String getWarehouseLocation() { return warehouseLocation; }
+    public void setWarehouseLocation(String warehouseLocation) { this.warehouseLocation = warehouseLocation; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-}
 
+    public LocalDateTime getLastUpdated() { return lastUpdated; }
+    public void setLastUpdated(LocalDateTime lastUpdated) { this.lastUpdated = lastUpdated; }
+}

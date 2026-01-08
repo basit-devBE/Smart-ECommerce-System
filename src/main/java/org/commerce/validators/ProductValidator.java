@@ -1,7 +1,7 @@
 package org.commerce.validators;
 
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.Product;
+import org.commerce.daos.entities.Product;
 
 import java.math.BigDecimal;
 

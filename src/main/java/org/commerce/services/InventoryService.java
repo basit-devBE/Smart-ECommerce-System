@@ -2,13 +2,13 @@ package org.commerce.services;
 
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.Inventory;
+import org.commerce.daos.entities.Inventory;
 import org.commerce.exceptions.EntityNotFoundException;
 import org.commerce.exceptions.ServiceException;
-import org.commerce.repositories.InventoryRepository;
-import org.commerce.repositories.ProductRepository;
-import org.commerce.repositories.interfaces.IInventoryRepository;
-import org.commerce.repositories.interfaces.IProductRepository;
+import org.commerce.daos.repositories.InventoryRepository;
+import org.commerce.daos.repositories.ProductRepository;
+import org.commerce.daos.repositories.interfaces.IInventoryRepository;
+import org.commerce.daos.repositories.interfaces.IProductRepository;
 import org.commerce.validators.InventoryValidator;
 
 import java.sql.Connection;

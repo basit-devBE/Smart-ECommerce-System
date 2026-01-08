@@ -1,4 +1,4 @@
-package org.commerce.models;
+package org.commerce.daos.models;
 
 import java.sql.Connection;
 import java.sql.SQLException;

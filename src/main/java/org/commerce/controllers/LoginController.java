@@ -5,7 +5,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.commerce.ECommerceApp;
 import org.commerce.common.Result;
-import org.commerce.entities.User;
+import org.commerce.daos.entities.User;
 import org.commerce.enums.UserRole;
 
 /**

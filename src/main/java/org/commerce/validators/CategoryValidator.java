@@ -1,7 +1,7 @@
 package org.commerce.validators;
 
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.Categories;
+import org.commerce.daos.entities.Categories;
 
 /**
  * Validator for Categories entity.

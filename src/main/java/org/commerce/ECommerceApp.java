@@ -7,14 +7,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.commerce.config.DBConfig;
 import org.commerce.config.MongoDBConfig;
-import org.commerce.models.*;
+import org.commerce.daos.models.*;
 import org.commerce.services.UserService;
 import org.commerce.services.ProductService;
 import org.commerce.services.CategoryService;
 import org.commerce.services.InventoryService;
 import org.commerce.services.ReviewService;
 import org.commerce.services.ActivityLogService;
-import org.commerce.entities.User;
+import org.commerce.daos.entities.User;
 import org.commerce.enums.UserRole;
 import org.commerce.common.Result;
 

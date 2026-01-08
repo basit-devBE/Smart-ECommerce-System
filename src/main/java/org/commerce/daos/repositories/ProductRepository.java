@@ -1,12 +1,12 @@
-package org.commerce.repositories;
+package org.commerce.daos.repositories;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.commerce.entities.Product;
-import org.commerce.repositories.interfaces.IProductRepository;
+import org.commerce.daos.entities.Product;
+import org.commerce.daos.repositories.interfaces.IProductRepository;
 
 /**
  * Repository implementation for Product entity operations.

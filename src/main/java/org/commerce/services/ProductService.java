@@ -4,13 +4,13 @@ import org.commerce.common.CacheManager;
 import org.commerce.common.ProductComparator;
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
-import org.commerce.entities.Product;
+import org.commerce.daos.entities.Product;
 import org.commerce.exceptions.EntityNotFoundException;
 import org.commerce.exceptions.ServiceException;
-import org.commerce.repositories.CategoryRepository;
-import org.commerce.repositories.ProductRepository;
-import org.commerce.repositories.interfaces.ICategoryRepository;
-import org.commerce.repositories.interfaces.IProductRepository;
+import org.commerce.daos.repositories.CategoryRepository;
+import org.commerce.daos.repositories.ProductRepository;
+import org.commerce.daos.repositories.interfaces.ICategoryRepository;
+import org.commerce.daos.repositories.interfaces.IProductRepository;
 import org.commerce.validators.ProductValidator;
 
 import java.sql.Connection;
