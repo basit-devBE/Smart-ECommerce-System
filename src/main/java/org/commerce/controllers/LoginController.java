@@ -90,6 +90,15 @@ public class LoginController {
         }
     }
 
+    @FXML
+    private void handleRegister() {
+        try {
+            ECommerceApp.showRegister();
+        } catch (Exception e) {
+            showError("Error loading registration page: " + e.getMessage());
+        }
+    }
+
     private void showError(String message) {
         errorLabel.setText(message);
         errorLabel.setVisible(true);

@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Text?>
 
 <BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.commerce.controllers.LoginController"
+            fx:controller="org.commerce.controllers.RegisterController"
             styleClass="root">
     
     <!-- Left Side - Branding -->
@@ -26,41 +26,51 @@
                 
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <Text text="✓" styleClass="feature-icon"/>
-                    <Text text="Manage Products Efficiently" styleClass="feature-text"/>
+                    <Text text="Browse Thousands of Products" styleClass="feature-text"/>
                 </HBox>
                 
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <Text text="✓" styleClass="feature-icon"/>
-                    <Text text="Track Inventory in Real-Time" styleClass="feature-text"/>
+                    <Text text="Secure Payment Processing" styleClass="feature-text"/>
                 </HBox>
                 
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <Text text="✓" styleClass="feature-icon"/>
-                    <Text text="Comprehensive Order Management" styleClass="feature-text"/>
+                    <Text text="Track Your Orders" styleClass="feature-text"/>
                 </HBox>
                 
                 <HBox spacing="15" alignment="CENTER_LEFT">
                     <Text text="✓" styleClass="feature-icon"/>
-                    <Text text="Advanced Analytics &amp; Reports" styleClass="feature-text"/>
+                    <Text text="Fast &amp; Reliable Delivery" styleClass="feature-text"/>
                 </HBox>
             </VBox>
         </VBox>
     </left>
     
-    <!-- Right Side - Login Form -->
+    <!-- Right Side - Registration Form -->
     <center>
         <VBox alignment="CENTER" styleClass="login-right">
             <padding>
-                <Insets top="50" right="80" bottom="50" left="80"/>
+                <Insets top="30" right="80" bottom="30" left="80"/>
             </padding>
             
-            <VBox fx:id="loginBox" spacing="25" alignment="CENTER" styleClass="login-box" maxWidth="400">
+            <VBox fx:id="registerBox" spacing="20" alignment="CENTER" styleClass="login-box" maxWidth="400">
                 <padding>
-                    <Insets top="40" right="40" bottom="40" left="40"/>
+                    <Insets top="30" right="40" bottom="30" left="40"/>
                 </padding>
                 
-                <Text text="Welcome Back!" styleClass="login-title"/>
-                <Text text="Sign in to continue to your dashboard" styleClass="login-subtitle"/>
+                <Text text="Create Account" styleClass="login-title"/>
+                <Text text="Join our marketplace today" styleClass="login-subtitle"/>
+                
+                <VBox spacing="8">
+                    <Label text="First Name" styleClass="form-label"/>
+                    <TextField fx:id="firstNameField" promptText="Enter your first name" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Last Name" styleClass="form-label"/>
+                    <TextField fx:id="lastNameField" promptText="Enter your last name" styleClass="form-input"/>
+                </VBox>
                 
                 <VBox spacing="8">
                     <Label text="Email Address" styleClass="form-label"/>
@@ -68,23 +78,28 @@
                 </VBox>
                 
                 <VBox spacing="8">
+                    <Label text="Phone Number" styleClass="form-label"/>
+                    <TextField fx:id="phoneField" promptText="Enter your phone number" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
                     <Label text="Password" styleClass="form-label"/>
-                    <PasswordField fx:id="passwordField" promptText="Enter your password" styleClass="form-input"/>
+                    <PasswordField fx:id="passwordField" promptText="Enter password (min 6 characters)" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Confirm Password" styleClass="form-label"/>
+                    <PasswordField fx:id="confirmPasswordField" promptText="Confirm your password" styleClass="form-input"/>
                 </VBox>
                 
                 <Label fx:id="errorLabel" text="Error message" styleClass="error-label" wrapText="true"/>
                 
-                <Button fx:id="loginButton" text="Sign In" onAction="#handleLogin" 
+                <Button fx:id="registerButton" text="Create Account" onAction="#handleRegister" 
                         styleClass="primary-button" maxWidth="Infinity"/>
                 
                 <HBox spacing="5" alignment="CENTER">
-                    <Text text="Don't have an account?" styleClass="hint-text"/>
-                    <Hyperlink text="Create Account" onAction="#handleRegister" styleClass="link-text"/>
-                </HBox>
-                
-                <HBox spacing="5" alignment="CENTER">
-                    <Text text="Default Admin:" styleClass="hint-text"/>
-                    <Text text="mohammedbasit362@gmail.com" styleClass="hint-text-bold"/>
+                    <Text text="Already have an account?" styleClass="hint-text"/>
+                    <Hyperlink text="Sign In" onAction="#handleBackToLogin" styleClass="link-text"/>
                 </HBox>
             </VBox>
         </VBox>

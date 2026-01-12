@@ -10,6 +10,7 @@ import org.commerce.common.PasswordHasher;
 import org.commerce.common.Result;
 import org.commerce.common.ValidationResult;
 import org.commerce.daos.entities.User;
+import org.commerce.enums.UserRole;
 import org.commerce.exceptions.DuplicateEntityException;
 import org.commerce.exceptions.EntityNotFoundException;
 import org.commerce.daos.repositories.UserRepository;
@@ -194,6 +195,43 @@ public class UserService {
         return Result.success(users);
     }
 
+    /**
+     * Registers a new user with default CUSTOMER role.
+     * 
+     * @param user The user to register
+     * @return Result containing the registered user or error message
+     */
+    public Result<User> register(User user) {
+        // Field validation
+        ValidationResult validation = UserValidator.validate(user);
+        if (!validation.isValid()) {
+            return Result.failure(validation.getErrorMessage());
+        }
+        
+        // Business rule: Email must be unique
+        if (userRepository.existsByEmail(user.getEmail(), connection)) {
+            return Result.failure("An account with this email already exists");
+        }
+        
+        // Set default role to CUSTOMER if not specified
+        if (user.getUserRole() == null) {
+            user.setUserRole(UserRole.CUSTOMER);
+        }
+        
+        // Hash password before storing
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(PasswordHasher.hashPassword(user.getPassword()));
+        }
+        
+        // Create user
+        User created = userRepository.createUser(user, connection);
+        
+        // Invalidate caches after creation
+        invalidateAllCaches();
+        
+        return Result.success(created, "Registration successful");
+    }
+    
     /**
      * Authenticates a user with email and password.
      * Stores user in active session cache upon successful login.

@@ -96,6 +96,18 @@ public class ECommerceApp extends Application {
         primaryStage.setScene(scene);
     }
 
+    public static void showLogin() throws Exception {
+        showLoginView();
+    }
+
+    public static void showRegister() throws Exception {
+        FXMLLoader loader = new FXMLLoader(ECommerceApp.class.getResource("/views/register.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root, 1000, 750);
+        scene.getStylesheets().add(ECommerceApp.class.getResource("/styles/main.css").toExternalForm());
+        primaryStage.setScene(scene);
+    }
+
     public static void showDashboard() throws Exception {
         FXMLLoader loader = new FXMLLoader(ECommerceApp.class.getResource("/views/dashboard.fxml"));
         Parent root = loader.load();
