@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.commerce.controllers.DashboardController"
+            styleClass="root">
+    
+    <!-- Top Navigation Bar -->
+    <top>
+        <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="20">
+            <padding>
+                <Insets top="20" right="30" bottom="20" left="30"/>
+            </padding>
+            
+            <Text text="Smart E-Commerce" styleClass="app-title"/>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <VBox alignment="CENTER_RIGHT" spacing="3">
+                <Label fx:id="welcomeLabel" text="Welcome, User" styleClass="welcome-text"/>
+                <Label fx:id="userRoleLabel" text="ADMIN" styleClass="role-badge"/>
+            </VBox>
+            
+            <Button text="Cache Stats" onAction="#handleShowCacheStats" styleClass="info-button"/>
+            <Button text="Clear Cache" onAction="#handleClearCache" styleClass="warning-button"/>
+            <Button text="Refresh" onAction="#handleRefresh" styleClass="secondary-button"/>
+            <Button text="Logout" onAction="#handleLogout" styleClass="logout-button"/>
+        </HBox>
+    </top>
+    
+    <!-- Main Content Area -->
+    <center>
+        <TabPane styleClass="main-tabs" tabClosingPolicy="UNAVAILABLE">
+            
+            <!-- Products Tab -->
+            <Tab text="Products">
+                <VBox spacing="15" styleClass="tab-content">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Text text="Product Management" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Add Product" onAction="#handleAddProduct" styleClass="primary-button"/>
+                        <Button text="Edit" onAction="#handleEditProduct" styleClass="secondary-button"/>
+                        <Button text="Delete" onAction="#handleDeleteProduct" styleClass="danger-button"/>
+                    </HBox>
+                    
+                    <TableView fx:id="productsTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="productIdCol" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="productNameCol" text="Product Name" prefWidth="250"/>
+                            <TableColumn fx:id="productPriceCol" text="Price" prefWidth="120"/>
+                            <TableColumn fx:id="productStockCol" text="Total Stock" prefWidth="120"/>
+                            <TableColumn fx:id="productCategoryCol" text="Category" prefWidth="200"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </Tab>
+            
+            <!-- Categories Tab -->
+            <Tab text="Categories">
+                <VBox spacing="15" styleClass="tab-content">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Text text="Category Management" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Add Category" onAction="#handleAddCategory" styleClass="primary-button"/>
+                        <Button text="Edit" onAction="#handleEditCategory" styleClass="secondary-button"/>
+                        <Button text="Delete" onAction="#handleDeleteCategory" styleClass="danger-button"/>
+                    </HBox>
+                    
+                    <TableView fx:id="categoriesTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="categoryIdCol" text="ID" prefWidth="80"/>
+                            <TableColumn fx:id="categoryNameCol" text="Category Name" prefWidth="250"/>
+                            <TableColumn fx:id="categoryDescCol" text="Description" prefWidth="400"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </Tab>
+            
+            <!-- Inventory Tab -->
+            <Tab text="Inventory">
+                <VBox spacing="15" styleClass="tab-content">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Text text="Inventory Management" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Add Inventory" onAction="#handleAddInventory" styleClass="primary-button"/>
+                        <Button text="Adjust" onAction="#handleAdjustInventory" styleClass="secondary-button"/>
+                    </HBox>
+                    
+                    <TableView fx:id="inventoryTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="inventoryIdCol" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="inventoryProductCol" text="Product" prefWidth="250"/>
+                            <TableColumn fx:id="inventoryQuantityCol" text="Quantity" prefWidth="120"/>
+                            <TableColumn fx:id="inventoryWarehouseCol" text="Warehouse" prefWidth="200"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </Tab>
+            
+            <!-- Users Tab -->
+            <Tab text="Users">
+                <VBox spacing="15" styleClass="tab-content">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+                    
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Text text="User Management" styleClass="section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="+ Add User" onAction="#handleAddUser" styleClass="primary-button"/>
+                    </HBox>
+                    
+                    <TableView fx:id="usersTable" styleClass="data-table" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="userIdCol" text="ID" prefWidth="60"/>
+                            <TableColumn fx:id="userNameCol" text="Full Name" prefWidth="250"/>
+                            <TableColumn fx:id="userEmailCol" text="Email" prefWidth="300"/>
+                            <TableColumn fx:id="userRoleCol" text="Role" prefWidth="150"/>
+                        </columns>
+                        <columnResizePolicy>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                        </columnResizePolicy>
+                    </TableView>
+                </VBox>
+            </Tab>
+            
+        </TabPane>
+    </center>
+    
+</BorderPane>

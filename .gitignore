@@ -12,6 +12,7 @@ target/
 *.iws
 *.iml
 *.ipr
+.idea/
 
 ### Eclipse ###
 .apt_generated
@@ -38,3 +39,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+run.sh
+JAVAFX_UI_README.md

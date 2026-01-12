@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.commerce.controllers.RegisterController"
+            styleClass="root">
+    
+    <!-- Left Side - Branding -->
+    <left>
+        <VBox alignment="CENTER" styleClass="login-left" prefWidth="400">
+            <padding>
+                <Insets top="50" right="50" bottom="50" left="50"/>
+            </padding>
+            
+            <Text text="Smart E-Commerce" styleClass="brand-title"/>
+            <Text text="Your Digital Marketplace" styleClass="brand-subtitle"/>
+            
+            <VBox spacing="20" alignment="CENTER_LEFT" styleClass="features-box">
+                <padding>
+                    <Insets top="50"/>
+                </padding>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Browse Thousands of Products" styleClass="feature-text"/>
+                </HBox>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Secure Payment Processing" styleClass="feature-text"/>
+                </HBox>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Track Your Orders" styleClass="feature-text"/>
+                </HBox>
+                
+                <HBox spacing="15" alignment="CENTER_LEFT">
+                    <Text text="✓" styleClass="feature-icon"/>
+                    <Text text="Fast &amp; Reliable Delivery" styleClass="feature-text"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </left>
+    
+    <!-- Right Side - Registration Form -->
+    <center>
+        <VBox alignment="CENTER" styleClass="login-right">
+            <padding>
+                <Insets top="30" right="80" bottom="30" left="80"/>
+            </padding>
+            
+            <VBox fx:id="registerBox" spacing="20" alignment="CENTER" styleClass="login-box" maxWidth="400">
+                <padding>
+                    <Insets top="30" right="40" bottom="30" left="40"/>
+                </padding>
+                
+                <Text text="Create Account" styleClass="login-title"/>
+                <Text text="Join our marketplace today" styleClass="login-subtitle"/>
+                
+                <VBox spacing="8">
+                    <Label text="First Name" styleClass="form-label"/>
+                    <TextField fx:id="firstNameField" promptText="Enter your first name" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Last Name" styleClass="form-label"/>
+                    <TextField fx:id="lastNameField" promptText="Enter your last name" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Email Address" styleClass="form-label"/>
+                    <TextField fx:id="emailField" promptText="Enter your email" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Phone Number" styleClass="form-label"/>
+                    <TextField fx:id="phoneField" promptText="Enter your phone number" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Password" styleClass="form-label"/>
+                    <PasswordField fx:id="passwordField" promptText="Enter password (min 6 characters)" styleClass="form-input"/>
+                </VBox>
+                
+                <VBox spacing="8">
+                    <Label text="Confirm Password" styleClass="form-label"/>
+                    <PasswordField fx:id="confirmPasswordField" promptText="Confirm your password" styleClass="form-input"/>
+                </VBox>
+                
+                <Label fx:id="errorLabel" text="Error message" styleClass="error-label" wrapText="true"/>
+                
+                <Button fx:id="registerButton" text="Create Account" onAction="#handleRegister" 
+                        styleClass="primary-button" maxWidth="Infinity"/>
+                
+                <HBox spacing="5" alignment="CENTER">
+                    <Text text="Already have an account?" styleClass="hint-text"/>
+                    <Hyperlink text="Sign In" onAction="#handleBackToLogin" styleClass="link-text"/>
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
