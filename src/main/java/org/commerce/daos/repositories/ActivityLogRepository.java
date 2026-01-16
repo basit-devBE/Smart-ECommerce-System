@@ -131,6 +131,7 @@ public class ActivityLogRepository {
             eq("action", action)
         ));
     }
+    @SuppressWarnings("unchecked")
     
     /**
      * Converts MongoDB Document to ActivityLog entity

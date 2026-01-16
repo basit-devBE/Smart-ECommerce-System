@@ -184,6 +184,7 @@ public class ReviewRepository {
     /**
      * Converts MongoDB Document to Review entity
      */
+    @SuppressWarnings("unchecked")
     private Review documentToReview(Document doc) {
         Review review = new Review();
         review.setId(doc.getObjectId("_id"));
